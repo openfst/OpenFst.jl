@@ -5,9 +5,9 @@ and Python-extension, is also used her.  That offers better run-time safety and
 handles different semirings in one untemplated class (FstClass).
 =#
 
-module JOpenFst
+module OpenFst
 
-const fstlib="/home/riley/src/jsalt/JOpenFst/src/jopenfst.so"
+const fstlib="/home/riley/src/jsalt/OpenFst/src/jopenfst.so"
 
 include("weight.jl")
 include("fst-class.jl")

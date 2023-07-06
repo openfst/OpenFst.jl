@@ -1,4 +1,4 @@
-const F = JOpenFst
+const F = OpenFst
 const testdir = "./testdata"
 const tmpdir = "/tmp"
 
@@ -35,7 +35,7 @@ if teststates != goldenstates
 end 
 
 # ArcIterator
-goldenarcs = [F.Arc(1, 2, 1.0, 1), F.Arc(0, 0, 2.0, 1), F.Arc(5, 6, 3.0, 0)]
+goldenarcs = [(1, 2, 1.0, 1), (0, 0, 2.0, 1), (5, 6, 3.0, 0)]
 
 # - OpenFst-style iteration/indexing interface (0-based arc indexing)
 aiter = F.ArcIterator(f, 0)

@@ -64,7 +64,7 @@ function delete!(aiter::ArcIterator)
    @ccall fstlib.ArcIteratorDelete(aiter.cptr::Ptr{Cvoid})::Nothing
 end
 
-function ArcIterator(fst::Fst, state::Int64)
+function ArcIterator(fst::Fst, state::Integer)
    cptr = @ccall fstlib.ArcIteratorCreate(fst.cptr::Ptr{Cvoid}, 
                                           state::Cint)::Ptr{Cvoid}
   aiter = ArcIterator(cptr)
@@ -84,7 +84,7 @@ function value(aiter::ArcIterator)::Arc
    @ccall fstlib.ArcIteratorValue(
         aiter.cptr::Ptr{Cvoid}, ilabel::Ref{Cint}, olabel::Ref{Cint},
         weight::Ref{Cdouble}, nextstate::Ref{Cint})::Nothing
-   Arc(ilabel[], olabel[], weight[], nextstate[])
+   (ilabel[], olabel[], weight[], nextstate[])
 end
 
 function next(aiter::ArcIterator)::Nothing
@@ -99,7 +99,7 @@ function reset(aiter::ArcIterator)::Nothing
    @ccall fstlib.ArcIteratorReset(aiter.cptr::Ptr{Cvoid})::Nothing
 end
 
-function seek(aiter::ArcIterator, a::Int64)::Nothing
+function seek(aiter::ArcIterator, a::Integer)::Nothing
    @ccall fstlib.ArcIteratorSeek(aiter.cptr::Ptr{Cvoid}, a::Cint)::Nothing
 end
 
@@ -112,11 +112,7 @@ struct Arcs
    aiter::ArcIterator
 end
 
-function Arcs(f::Fst, s::Integer, a = ArcIterator(f, s)) 
-   fst = f
-   state = s
-   aiter = a
-end
+Arcs(f::Fst, s::Integer) = Arcs(f, s, ArcIterator(f, s))
 
 function Base.iterate(arcs::Arcs, aiter = arcs.aiter)
    if done(aiter)
@@ -130,11 +126,11 @@ end
 
 Base.eltype(arcs::Arcs) = Arc
 
-function Base.length(arcs::Arcs)::Int64
+function Base.length(arcs::Arcs)::Int32
    numarcs(arcs.fst, arcs.state)    
 end
 
-function Base.getindex(arcs::Arcs, i::Int64)
+function Base.getindex(arcs::Arcs, i::Integer)::Arc
    seek(arcs.aiter, i - 1)   
    value(arcs.aiter)   
 end
@@ -152,7 +148,7 @@ function delete!(aiter::MutableArcIterator)
    @ccall fstlib.MutableArcIteratorDelete(aiter.cptr::Ptr{Cvoid})::Nothing
 end
 
-function MutableArcIterator(fst::MutableFst, state::Int64)
+function MutableArcIterator(fst::MutableFst, state::Integer)
    cptr = @ccall fstlib.MutableArcIteratorCreate(fst.cptr::Ptr{Cvoid}, 
                                                  state::Cint)::Ptr{Cvoid}
    aiter = MutableArcIterator(cptr)
@@ -172,7 +168,7 @@ function value(aiter::MutableArcIterator)::Arc
    @ccall fstlib.MutableArcIteratorValue(
         aiter.cptr::Ptr{Cvoid}, ilabel::Ref{Cint}, olabel::Ref{Cint},
         weight::Ref{Cdouble}, nextstate::Ref{Cint})::Nothing
-   Arc(ilabel[], olabel[], weight[], nextstate[])
+   (ilabel[], olabel[], weight[], nextstate[])
 end
 
 function next(aiter::MutableArcIterator)::Nothing
@@ -187,16 +183,16 @@ function reset(aiter::MutableArcIterator)::Nothing
    @ccall fstlib.MutableArcIteratorReset(aiter.cptr::Ptr{Cvoid})::Nothing
 end
 
-function seek(aiter::MutableArcIterator, a::Int64)::Nothing
+function seek(aiter::MutableArcIterator, a::Integer)::Nothing
    @ccall fstlib.MutableArcIteratorSeek(aiter.cptr::Ptr{Cvoid}, 
                                         a::Cint)::Cvoid
 end
 
 function setvalue(aiter::MutableArcIterator, arc::Arc)::Nothing
    @ccall fstlib.MutableArcIteratorSetValue(aiter.cptr::Ptr{Cvoid}, 
-                                            arc.ilabel::Cint, arc.olabel::Cint,
-                                            arc.weight::Cdouble, 
-                                            arc.nextstate::Cint)::Cvoid
+                                            arc[1]::Cint, arc[2]::Cint,
+                                            arc[3]::Cdouble, 
+                                            arc[4]::Cint)::Cvoid
 end
 
 # - Julia-style arc iteration/indexing interface (1-based arc indexing)
@@ -204,16 +200,11 @@ end
 # the iter source for FST mutable arcs at a state
 struct MutableArcs
    fst::MutableFst
-   state::Int64    
+   state::Int32
    aiter::MutableArcIterator
 end
 
-function MutableArcs(f::Fst, s::Int64, a = MutableArcIterator(f, s)) 
-   fst = f
-   state = s
-   aiter = a
-end
-
+MutableArcs(f::Fst, s::Integer) = MutableArcs(f, s, MutableArcIterator(f, s))
 
 function Base.iterate(arcs::MutableArcs, aiter = arcs.aiter)
    if done(arcs.aiter)
@@ -227,17 +218,16 @@ end
 
 Base.eltype(arcs::MutableArcs) = Arc
 
-function Base.length(arcs::MutableArcs)::Int64
+function Base.length(arcs::MutableArcs)::Int32
    numarcs(arcs.fst, arcs.state)    
 end
 
-function Base.getindex(arcs::MutableArcs, i::Int64)
+function Base.getindex(arcs::MutableArcs, i::Integer)::Arc
    seek(arcs.aiter, i - 1)   
    value(arcs.aiter)   
 end
 
-function Base.setindex!(arcs::MutableArcs, arc::Arc,
-                        i::Int64)::Nothing
+function Base.setindex!(arcs::MutableArcs, arc::Arc, i::Integer)::Nothing
    seek(arcs.aiter, i - 1)   
    setvalue(arcs.aiter, arc);
 end

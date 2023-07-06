@@ -1,4 +1,4 @@
-const F = JOpenFst
+const F = OpenFst
 const testdir = "./testdata"
 const tmpdir = "/tmp"
 
@@ -62,7 +62,7 @@ if !F.equal(f, tf)
 end
 
 # MutableFstClass
-goldenarcs = [F.Arc(1, 2, 1.0, 1), F.Arc(0, 0, 2.0, 1), F.Arc(5, 6, 3.0, 0)]
+goldenarcs = [(1, 2, 1.0, 1), (0, 0, 2.0, 1), (5, 6, 3.0, 0)]
 
 mf = F.read(testdir * "/f1vector.fst");
 
@@ -115,12 +115,12 @@ F.deletestates!(mf);
 
 svecf = F.StdVectorFst()
 if !F.isfst(svecf) || F.fsttype(svecf) != "vector" || 
-    F.arctype(svecf) != "standard"
+    F.arctype(svecf) != "standard" || typeof(svecf) != F.VectorFst{F.TropicalWeight}
   error("test failed: StdVectorFst construction")
 end
 
 lvecf = F.VectorFst{F.LogWeight}()
 if !F.isfst(lvecf) || F.fsttype(lvecf) != "vector" || 
-    F.arctype(lvecf) != "log"
+    F.arctype(lvecf) != "log" || typeof(lvecf) != F.VectorFst{F.LogWeight}
   error("test failed: Log VectorFst construction")
 end

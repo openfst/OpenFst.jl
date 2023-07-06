@@ -17,24 +17,20 @@ end
 StdVectorFst = VectorFst{TropicalWeight}
 StdGenericFst = GenericFst{TropicalWeight}
 
-struct Arc
-   ilabel::Int64
-   olabel::Int64
-   weight::Float64
-   nextstate::Int64
-end
+# ilabel, olabel, weight, nextstate
+Arc = Tuple{Integer, Integer, AbstractFloat, Integer}
 
-nullptr = convert(Ptr{Cvoid}, 0);
+_nullptr = convert(Ptr{Cvoid}, 0)
 
-isfst(fst::Fst)::Bool = (fst.cptr != nullptr)
+isfst(fst::Fst)::Bool = (fst.cptr != _nullptr)
 
-function delete!(fst::Fst)
+function _delete!(fst::Fst)
    @ccall fstlib.FstDelete(fst.cptr::Ptr{Cvoid})::Nothing
 end
 
-function create(fsttype, weighttype, cptr::Ptr{Cvoid})
+function _create(fsttype, weighttype, cptr::Ptr{Cvoid})
    fst = fsttype{weighttype}(cptr)
-   finalizer(delete!, fst)
+   finalizer(_delete!, fst)
    return fst
 end
 
@@ -45,9 +41,9 @@ function read(file::String)
    fst = GenericFst{Weight}(cptr)   
    if isfst(fst)
       ftype = fsttype(fst) == "vector" ? VectorFst : GenericFst
-      wtype = WeightType[arctype(fst)]
+      wtype = _WeightType[arctype(fst)]
       fst = ftype{wtype}(cptr)
-      finalizer(delete!, fst)
+      finalizer(_delete!, fst)
       return fst
    else
       error("read failed")
@@ -64,19 +60,19 @@ function start(fst::Fst)::Cint
    @ccall fstlib.FstStart(fst.cptr::Ptr{Cvoid})::Cint
 end
 
-function final(fst::Fst, state::Int64)::Cdouble
+function final(fst::Fst, state::Integer)::Cdouble
    @ccall fstlib.FstFinal(fst.cptr::Ptr{Cvoid}, state::Cint)::Cdouble
 end
 
-function numarcs(fst::Fst, state::Int64)::Cint
+function numarcs(fst::Fst, state::Integer)::Cint
    @ccall fstlib.FstNumArcs(fst.cptr::Ptr{Cvoid}, state::Cint)::Cint
 end
 
-function numinputepsilons(fst::Fst, state::Int64)::Cint
+function numinputepsilons(fst::Fst, state::Integer)::Cint
    @ccall fstlib.FstNumInputEpsilons(fst.cptr::Ptr{Cvoid}, state::Cint)::Cint
 end
 
-function numoutputepsilons(fst::Fst, state::Int64)::Cint
+function numoutputepsilons(fst::Fst, state::Integer)::Cint
    @ccall fstlib.FstNumOutputEpsilons(fst.cptr::Ptr{Cvoid}, state::Cint)::Cint
 end
 
@@ -97,39 +93,38 @@ end
 
 # MutableFst type
 
-function setstart!(fst::MutableFst, s::Int64)::Bool
+function setstart!(fst::MutableFst, s::Integer)::Bool
     @ccall fstlib.FstSetStart(fst.cptr::Ptr{Cvoid}, s::Cint)::Cuchar
 end
 
-function setfinal!(fst::MutableFst, s::Int64, w::Float64)::Bool
+function setfinal!(fst::MutableFst, s::Integer, w::AbstractFloat)::Bool
     @ccall fstlib.FstSetFinal(fst.cptr::Ptr{Cvoid}, s::Cint, 
                              w::Cdouble)::Cuchar
 end
 
-function addarc!(fst::MutableFst, s::Int64, a::Arc)::Bool
-    @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, s::Cint, a.ilabel::Cint, 
-                            a.olabel::Cint, a.weight::Cdouble, 
-                            a.nextstate::Cint)::Cuchar
+function addarc!(fst::MutableFst, s::Integer, a::Arc)::Bool
+    @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, s::Cint, a[1]::Cint, 
+                            a[2]::Cint, a[3]::Cdouble, a[4]::Cint)::Cuchar
 end
 
-function deletearcs!(fst::MutableFst, s::Int64)::Bool
+function deletearcs!(fst::MutableFst, s::Integer)::Bool
     @ccall fstlib.FstDeleteArcs(fst.cptr::Ptr{Cvoid}, s::Cint)::Cuchar
 end
 
-function reservearcs(fst::MutableFst, s::Int64, n::Int64)::Bool
+function reservearcs(fst::MutableFst, s::Integer, n::Integer)::Bool
     @ccall fstlib.FstReserveArcs(fst.cptr::Ptr{Cvoid}, s::Cint, 
                                  n::Cint)::Cuchar
 end
 
-function numstates(fst::MutableFst)::Int64
+function numstates(fst::MutableFst)::Cint
     @ccall fstlib.FstNumStates(fst.cptr::Ptr{Cvoid})::Cint
 end
 
-function addstate!(fst::MutableFst)::Int64
+function addstate!(fst::MutableFst)::Cint
     @ccall fstlib.FstAddState(fst.cptr::Ptr{Cvoid})::Cint
 end
 
-function reservestates(fst::MutableFst, n::Int64)::Bool
+function reservestates(fst::MutableFst, n::Integer)::Bool
     @ccall fstlib.FstReserveStates(fst.cptr::Ptr{Cvoid}, n::Cint)::Cuchar
 end
 
@@ -140,8 +135,8 @@ end
 # VectorFst type
 
 function VectorFst{W}() where W <: Weight
-    arctype = ArcType[W]
+    arctype = _ArcType[W]
     cptr = @ccall fstlib.VectorFstCreate(arctype::Cstring)::Ptr{Cvoid}
-    create(VectorFst, W, cptr)
+    _create(VectorFst, W, cptr)
 end
 

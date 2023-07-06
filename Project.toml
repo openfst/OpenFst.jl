@@ -1,4 +1,4 @@
-name = "JOpenFst"
+name = "OpenFst"
 uuid = "3e215157-cce3-4b04-a8eb-cbfb077f1dc8"
 authors = ["riley "]
 version = "0.1.0"
