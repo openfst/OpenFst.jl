@@ -2,7 +2,7 @@ function compose(fst1::Fst, fst2::Fst)::Fst
    _create(VectorFst, typeof(fst1), 
            @ccall fstlib.FstCompose(fst1.cptr::Ptr{Cvoid}, 
   	                            fst2.cptr::Ptr{Cvoid})::Ptr{Cvoid})
- end
+end
 
 function equal(fst1::Fst, fst2::Fst, δ = 1.0e-6)::Bool
    @ccall fstlib.FstEqual(fst1.cptr::Ptr{Cvoid}, fst2.cptr::Ptr{Cvoid},

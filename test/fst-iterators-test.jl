@@ -10,7 +10,7 @@ if !F.isfst(f)
 end
 
 # StateIterator
-goldenstates = [0,1]
+goldenstates = [1,2]
 
 # - OpenFst-style iteration interface
 siter = F.StateIterator(f)
@@ -26,7 +26,7 @@ end
 
 # - Julia-style iteration interface
 teststates = Vector{Int32}()
-for s in f
+for s in F.states(f)
    push!(teststates, s)
 end
 
@@ -35,10 +35,10 @@ if teststates != goldenstates
 end 
 
 # ArcIterator
-goldenarcs = [(1, 2, 1.0, 1), (0, 0, 2.0, 1), (5, 6, 3.0, 0)]
+goldenarcs = [F.Arc(1, 2, 1.0, 2), F.Arc(0, 0, 2.0, 2), F.Arc(5, 6, 3.0, 1)]
 
 # - OpenFst-style iteration/indexing interface (0-based arc indexing)
-aiter = F.ArcIterator(f, 0)
+aiter = F.ArcIterator(f, 1)
 testarcs = Vector()
 while !F.done(aiter)
    push!(testarcs, F.value(aiter))
@@ -51,14 +51,14 @@ if testarcs != goldenarcs
 end 
 
 F.reset(aiter)
-F.seek(aiter, 1)
-if F.position(aiter) != 1 || F.value(aiter) != goldenarcs[2]
+F.seek(aiter, 2)
+if F.position(aiter) != 2 || F.value(aiter) != goldenarcs[2]
    error("test failed: arc iterator (2)")
 end
 
 # - Julia-style iteration/indexing interface (1-based arc indexing)
 testarcs = Vector()
-for a in F.Arcs(f, 0)
+for a in F.arcs(f, 1)
    push!(testarcs, a)
 end
 
@@ -66,13 +66,13 @@ if testarcs != goldenarcs
    error("test failed: arc iterator (3)")
 end 
 
-farcs = F.Arcs(f, 0)
+farcs = F.arcs(f, 1)
 if farcs[1] != goldenarcs[1]
    error("test failed: arc index (1)")
 end
 
 # - OpenFst-style iteration/indexing interface (0-based arc indexing)
-aiter = F.MutableArcIterator(mf, 0)
+aiter = F.MutableArcIterator(mf, 1)
 testarcs = Vector()
 
 while !F.done(aiter)
@@ -86,8 +86,8 @@ if testarcs != goldenarcs
 end 
 
 F.reset(aiter)
-F.seek(aiter, 1)
-if F.position(aiter) != 1 || F.value(aiter) != goldenarcs[2]
+F.seek(aiter, 2)
+if F.position(aiter) != 2 || F.value(aiter) != goldenarcs[2]
    error("test failed: mutable arc iterator (2)")
 end
 
@@ -100,14 +100,13 @@ end
 # restore
 F.setvalue(aiter, goldenarcs[2])
 
-
 # - Julia-style iteration/indexing interface (1-based arc indexing)
 testarcs = Vector()
-for a in F.Arcs(mf, 0)
+for a in F.arcs(mf, 1)
    push!(testarcs, a)
 end
 
-mfarcs = F.MutableArcs(mf, 0)
+mfarcs = F.arcs(mf, 1)
 if mfarcs[1] != goldenarcs[1]
    error("test failed: mutable arc index (1)")
 end

@@ -23,7 +23,7 @@ function done(siter::StateIterator)::Bool
 end
 
 function value(siter::StateIterator)::Cint
-   @ccall fstlib.StateIteratorValue(siter.cptr::Ptr{Cvoid})::Cint
+    1 + @ccall fstlib.StateIteratorValue(siter.cptr::Ptr{Cvoid})::Cint
 end
 
 function next(siter::StateIterator)::Nothing
@@ -31,6 +31,9 @@ function next(siter::StateIterator)::Nothing
 end
 
 # - Julia-style state iteration interface
+
+# Julia state iterator is presentlyjust the FST
+states(fst::Fst) = fst
 
 # constructs OpenFst StateIterator
 function Base.iterate(fst::Fst)
@@ -66,7 +69,7 @@ end
 
 function ArcIterator(fst::Fst, state::Integer)
    cptr = @ccall fstlib.ArcIteratorCreate(fst.cptr::Ptr{Cvoid}, 
-                                          state::Cint)::Ptr{Cvoid}
+                                          (state - 1)::Cint)::Ptr{Cvoid}
   aiter = ArcIterator(cptr)
   finalizer(delete!, aiter)
   return aiter
@@ -84,7 +87,7 @@ function value(aiter::ArcIterator)::Arc
    @ccall fstlib.ArcIteratorValue(
         aiter.cptr::Ptr{Cvoid}, ilabel::Ref{Cint}, olabel::Ref{Cint},
         weight::Ref{Cdouble}, nextstate::Ref{Cint})::Nothing
-   (ilabel[], olabel[], weight[], nextstate[])
+    Arc(ilabel[], olabel[], weight[], nextstate[] + 1)
 end
 
 function next(aiter::ArcIterator)::Nothing
@@ -92,7 +95,7 @@ function next(aiter::ArcIterator)::Nothing
 end
 
 function position(aiter::ArcIterator)::Int32
-   @ccall fstlib.ArcIteratorPosition(aiter.cptr::Ptr{Cvoid})::Cint
+   1 + @ccall fstlib.ArcIteratorPosition(aiter.cptr::Ptr{Cvoid})::Cint
 end
 
 function reset(aiter::ArcIterator)::Nothing
@@ -100,19 +103,22 @@ function reset(aiter::ArcIterator)::Nothing
 end
 
 function seek(aiter::ArcIterator, a::Integer)::Nothing
-   @ccall fstlib.ArcIteratorSeek(aiter.cptr::Ptr{Cvoid}, a::Cint)::Nothing
+   @ccall fstlib.ArcIteratorSeek(aiter.cptr::Ptr{Cvoid}, (a - 1)::Cint)::Nothing
 end
 
 # - Julia-style arc iteration/indexing interface (1-based arc indexing)
-
 # the iter source type for FST arcs at a state
 struct Arcs
    fst::Fst
-   state::Int64    
+   state::Int64
    aiter::ArcIterator
 end
 
-Arcs(f::Fst, s::Integer) = Arcs(f, s, ArcIterator(f, s))
+# returns a Julia-sytle arc iterator
+function arcs(fst::Fst, state::Integer) 
+   aiter = ArcIterator(fst, state)
+   Arcs(fst, state, aiter)
+end
 
 function Base.iterate(arcs::Arcs, aiter = arcs.aiter)
    if done(aiter)
@@ -131,7 +137,7 @@ function Base.length(arcs::Arcs)::Int32
 end
 
 function Base.getindex(arcs::Arcs, i::Integer)::Arc
-   seek(arcs.aiter, i - 1)   
+   seek(arcs.aiter, i)   
    value(arcs.aiter)   
 end
 
@@ -150,7 +156,7 @@ end
 
 function MutableArcIterator(fst::MutableFst, state::Integer)
    cptr = @ccall fstlib.MutableArcIteratorCreate(fst.cptr::Ptr{Cvoid}, 
-                                                 state::Cint)::Ptr{Cvoid}
+                                                 (state - 1)::Cint)::Ptr{Cvoid}
    aiter = MutableArcIterator(cptr)
    finalizer(delete!, aiter)
    return aiter
@@ -168,7 +174,7 @@ function value(aiter::MutableArcIterator)::Arc
    @ccall fstlib.MutableArcIteratorValue(
         aiter.cptr::Ptr{Cvoid}, ilabel::Ref{Cint}, olabel::Ref{Cint},
         weight::Ref{Cdouble}, nextstate::Ref{Cint})::Nothing
-   (ilabel[], olabel[], weight[], nextstate[])
+   Arc(ilabel[], olabel[], weight[], nextstate[] + 1)
 end
 
 function next(aiter::MutableArcIterator)::Nothing
@@ -176,7 +182,7 @@ function next(aiter::MutableArcIterator)::Nothing
 end
 
 function position(aiter::MutableArcIterator)::Int32
-   @ccall fstlib.MutableArcIteratorPosition(aiter.cptr::Ptr{Cvoid})::Cint
+   1 + @ccall fstlib.MutableArcIteratorPosition(aiter.cptr::Ptr{Cvoid})::Cint
 end
 
 function reset(aiter::MutableArcIterator)::Nothing
@@ -185,14 +191,14 @@ end
 
 function seek(aiter::MutableArcIterator, a::Integer)::Nothing
    @ccall fstlib.MutableArcIteratorSeek(aiter.cptr::Ptr{Cvoid}, 
-                                        a::Cint)::Cvoid
+                                        (a - 1)::Cint)::Cvoid
 end
 
 function setvalue(aiter::MutableArcIterator, arc::Arc)::Nothing
    @ccall fstlib.MutableArcIteratorSetValue(aiter.cptr::Ptr{Cvoid}, 
-                                            arc[1]::Cint, arc[2]::Cint,
-                                            arc[3]::Cdouble, 
-                                            arc[4]::Cint)::Cvoid
+                                            arc.ilabel::Cint, arc.olabel::Cint,
+                                            arc.weight::Cdouble, 
+                                            (arc.nextstate - 1)::Cint)::Cvoid
 end
 
 # - Julia-style arc iteration/indexing interface (1-based arc indexing)
@@ -204,7 +210,10 @@ struct MutableArcs
    aiter::MutableArcIterator
 end
 
-MutableArcs(f::Fst, s::Integer) = MutableArcs(f, s, MutableArcIterator(f, s))
+function arcs(fst::MutableFst, state::Integer)
+   aiter = MutableArcIterator(fst, state)
+   MutableArcs(fst, state, aiter)
+end
 
 function Base.iterate(arcs::MutableArcs, aiter = arcs.aiter)
    if done(arcs.aiter)
@@ -223,11 +232,11 @@ function Base.length(arcs::MutableArcs)::Int32
 end
 
 function Base.getindex(arcs::MutableArcs, i::Integer)::Arc
-   seek(arcs.aiter, i - 1)   
+   seek(arcs.aiter, i)   
    value(arcs.aiter)   
 end
 
 function Base.setindex!(arcs::MutableArcs, arc::Arc, i::Integer)::Nothing
-   seek(arcs.aiter, i - 1)   
+   seek(arcs.aiter, i)   
    setvalue(arcs.aiter, arc);
 end

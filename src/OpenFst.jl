@@ -7,7 +7,7 @@ handles different semirings in one untemplated class (FstClass).
 
 module OpenFst
 
-const fstlib="/home/riley/src/jsalt/OpenFst/src/jopenfst.so"
+const fstlib="/home/riley/src/jsalt/OpenFst.jl/src/jopenfst.so"
 
 include("weight.jl")
 include("fst-class.jl")

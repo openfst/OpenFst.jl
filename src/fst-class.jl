@@ -18,7 +18,12 @@ StdVectorFst = VectorFst{TropicalWeight}
 StdGenericFst = GenericFst{TropicalWeight}
 
 # ilabel, olabel, weight, nextstate
-Arc = Tuple{Integer, Integer, AbstractFloat, Integer}
+struct Arc
+  ilabel::Int32
+  olabel::Int32
+  weight::Float64
+  nextstate::Int32
+end
 
 _nullptr = convert(Ptr{Cvoid}, 0)
 
@@ -57,23 +62,23 @@ function write(fst::Fst, file::String)::Bool
 end
 
 function start(fst::Fst)::Cint
-   @ccall fstlib.FstStart(fst.cptr::Ptr{Cvoid})::Cint
+    1 + @ccall fstlib.FstStart(fst.cptr::Ptr{Cvoid})::Cint
 end
 
 function final(fst::Fst, state::Integer)::Cdouble
-   @ccall fstlib.FstFinal(fst.cptr::Ptr{Cvoid}, state::Cint)::Cdouble
+   @ccall fstlib.FstFinal(fst.cptr::Ptr{Cvoid}, (state - 1)::Cint)::Cdouble
 end
 
 function numarcs(fst::Fst, state::Integer)::Cint
-   @ccall fstlib.FstNumArcs(fst.cptr::Ptr{Cvoid}, state::Cint)::Cint
+   @ccall fstlib.FstNumArcs(fst.cptr::Ptr{Cvoid}, (state - 1)::Cint)::Cint
 end
 
 function numinputepsilons(fst::Fst, state::Integer)::Cint
-   @ccall fstlib.FstNumInputEpsilons(fst.cptr::Ptr{Cvoid}, state::Cint)::Cint
+   @ccall fstlib.FstNumInputEpsilons(fst.cptr::Ptr{Cvoid}, (state - 1)::Cint)::Cint
 end
 
 function numoutputepsilons(fst::Fst, state::Integer)::Cint
-   @ccall fstlib.FstNumOutputEpsilons(fst.cptr::Ptr{Cvoid}, state::Cint)::Cint
+   @ccall fstlib.FstNumOutputEpsilons(fst.cptr::Ptr{Cvoid}, (state - 1)::Cint)::Cint
 end
 
 function weighttype(fst::Fst)::String
@@ -94,25 +99,25 @@ end
 # MutableFst type
 
 function setstart!(fst::MutableFst, s::Integer)::Bool
-    @ccall fstlib.FstSetStart(fst.cptr::Ptr{Cvoid}, s::Cint)::Cuchar
+    @ccall fstlib.FstSetStart(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint)::Cuchar
 end
 
 function setfinal!(fst::MutableFst, s::Integer, w::AbstractFloat)::Bool
-    @ccall fstlib.FstSetFinal(fst.cptr::Ptr{Cvoid}, s::Cint, 
+    @ccall fstlib.FstSetFinal(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
                              w::Cdouble)::Cuchar
 end
 
 function addarc!(fst::MutableFst, s::Integer, a::Arc)::Bool
-    @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, s::Cint, a[1]::Cint, 
-                            a[2]::Cint, a[3]::Cdouble, a[4]::Cint)::Cuchar
+    @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, a.ilabel::Cint, 
+                            a.olabel::Cint, a.weight::Cdouble, (a.nextstate - 1)::Cint)::Cuchar
 end
 
 function deletearcs!(fst::MutableFst, s::Integer)::Bool
-    @ccall fstlib.FstDeleteArcs(fst.cptr::Ptr{Cvoid}, s::Cint)::Cuchar
+    @ccall fstlib.FstDeleteArcs(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint)::Cuchar
 end
 
 function reservearcs(fst::MutableFst, s::Integer, n::Integer)::Bool
-    @ccall fstlib.FstReserveArcs(fst.cptr::Ptr{Cvoid}, s::Cint, 
+    @ccall fstlib.FstReserveArcs(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
                                  n::Cint)::Cuchar
 end
 
