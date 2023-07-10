@@ -18,7 +18,7 @@ StdVectorFst = VectorFst{TropicalWeight}
 StdGenericFst = GenericFst{TropicalWeight}
 
 # ilabel, olabel, weight, nextstate
-struct Arc
+@kwdef struct Arc
   ilabel::Int32
   olabel::Int32
   weight::Float64

@@ -12,10 +12,57 @@ if !F.isfst(f2)
   error("test failed: read")
 end
 
+a1 = F.read(testdir * "/a1.fst")
+if !F.isfst(a1)
+  error("test failed: read")
+end
+
+a2 = F.read(testdir * "/a2.fst")
+if !F.isfst(a2)
+  error("test failed: read")
+end
+
 cf = F.compose(f1, f2)
 goldencf = F.read(testdir * "/f12compose.fst")
 if !F.isfst(cf) || !F.equal(cf, goldencf)
    error("test failed: compose")
+end
+
+inf = F.intersect(a1, a2)
+goldeninf = F.read(testdir * "/a12intersect.fst")
+if !F.isfst(inf) || !F.equal(inf, goldeninf)
+   error("test failed: intersect")
+end
+
+conf = F.VectorFst(a1)
+F.concat!(conf, a2)
+goldenconf = F.read(testdir * "/a12concat.fst")
+if !F.isfst(conf) || !F.equal(conf, goldenconf)
+   error("test failed: concat")
+end
+
+clsf = F.VectorFst(a1)
+F.closure!(clsf)
+goldenclsf = F.read(testdir * "/a1closure.fst")
+if !F.isfst(clsf) || !F.equal(clsf, goldenclsf)
+   error("test failed: closure")
+end
+
+unf1 = F.VectorFst(a1)
+F.union!(unf1, a2)
+goldenunf = F.read(testdir * "/a12union.fst")
+if !F.isfst(unf1) || !F.equal(unf1, goldenunf)
+   error("test failed: union")
+end
+
+unf2 = F.VectorFst(a2)
+F.union!(unf2, a1)
+F.rmepsilon!(unf1)
+F.rmepsilon!(unf2)
+dunf1 = F.determinize(unf1)
+dunf2 = F.determinize(unf2)
+if !F.equivalent(dunf1, dunf2)
+   error("test failed: equivalent")
 end
 
 invf = F.VectorFst(f1)
