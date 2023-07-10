@@ -140,8 +140,18 @@ end
 # VectorFst type
 
 function VectorFst{W}() where W <: Weight
-    arctype = _ArcType[W]
-    cptr = @ccall fstlib.VectorFstCreate(arctype::Cstring)::Ptr{Cvoid}
+    atype = _ArcType[W]
+    cptr = @ccall fstlib.VectorFstCreate(atype::Cstring)::Ptr{Cvoid}
     _create(VectorFst, W, cptr)
 end
 
+function VectorFst(fst::Fst)
+    wtype = _WeightType[weighttype(fst)]
+    cptr = @ccall fstlib.VectorFstCopy(fst.cptr::Ptr{Cvoid})::Ptr{Cvoid}
+    _create(VectorFst, wtype, cptr)
+end
+
+# function VectorFst{W}(fst::Fst{W}) where W <: Weight
+#     cptr = @ccall fstlib.VectorFstCopy(fst.cptr::Ptr{Cvoid})::Ptr{Cvoid}
+#     _create(VectorFst, W, cptr)
+# end

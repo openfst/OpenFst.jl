@@ -126,11 +126,17 @@ void FstReserveStates(MutableFstClass *fst, int n) {
 
 extern "C" {
   VectorFstClass *VectorFstCreate(const char *arctype);
+  VectorFstClass *VectorFstCopy(const FstClass *fst);
 };
 
 VectorFstClass *VectorFstCreate(const char *arctype) {
    return new VectorFstClass(arctype);
 }
+
+VectorFstClass *VectorFstCopy(const FstClass *fst) {
+   return new VectorFstClass(*fst);
+}
+
 
 }  // namespace fst::script
 

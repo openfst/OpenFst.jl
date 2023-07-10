@@ -124,3 +124,8 @@ if !F.isfst(lvecf) || F.fsttype(lvecf) != "vector" ||
     F.arctype(lvecf) != "log" || typeof(lvecf) != F.VectorFst{F.LogWeight}
   error("test failed: Log VectorFst construction")
 end
+
+copyf = F.VectorFst(f)
+if !F.equal(copyf, f)
+   error("test failed: copy")
+end
