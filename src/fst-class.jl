@@ -5,24 +5,33 @@ abstract type MutableFst{Weight} <: Fst{Weight} end
 
 # A julia primitive MutableFst type
 mutable struct VectorFst{Weight} <: MutableFst{Weight}
-  cptr::Ptr{Cvoid}
+   cptr::Ptr{Cvoid}
 end
 
 # A julia primitive generic Fst type
 # This is a catch-all for o.w. unspecified Fsts
 mutable struct GenericFst{Weight} <: Fst{Weight}
-  cptr::Ptr{Cvoid}
+   cptr::Ptr{Cvoid}
 end
 
 StdVectorFst = VectorFst{TropicalWeight}
 StdGenericFst = GenericFst{TropicalWeight}
 
+function show(fst::Fst{W}) where W <: Weight
+   println(typeof(fst))
+end
+
 # ilabel, olabel, weight, nextstate
 @kwdef struct Arc
-  ilabel::Int32
-  olabel::Int32
-  weight::Float64
-  nextstate::Int32
+    ilabel::Int32
+    olabel::Int32
+    weight::Float64
+    nextstate::Int32
+end
+
+function show(arc::Arc)
+    println("Arc(ilabel = ", arc.ilabel, ", olabel = ", arc.olabel, 
+            ", weight = ", arc.weight, ", nextstate = ", arc.nextstate, ")")
 end
 
 _nullptr = convert(Ptr{Cvoid}, 0)
@@ -62,7 +71,7 @@ function write(fst::Fst, file::String)::Bool
 end
 
 function start(fst::Fst)::Cint
-    1 + @ccall fstlib.FstStart(fst.cptr::Ptr{Cvoid})::Cint
+   1 + @ccall fstlib.FstStart(fst.cptr::Ptr{Cvoid})::Cint
 end
 
 function final(fst::Fst, state::Integer)::Cdouble
@@ -103,30 +112,30 @@ function setstart!(fst::MutableFst, s::Integer)::Bool
 end
 
 function setfinal!(fst::MutableFst, s::Integer, w::AbstractFloat)::Bool
-    @ccall fstlib.FstSetFinal(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
-                             w::Cdouble)::Cuchar
+   @ccall fstlib.FstSetFinal(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
+                            w::Cdouble)::Cuchar
 end
 
 function addarc!(fst::MutableFst, s::Integer, a::Arc)::Bool
-    @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, a.ilabel::Cint, 
-                            a.olabel::Cint, a.weight::Cdouble, (a.nextstate - 1)::Cint)::Cuchar
+   @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, a.ilabel::Cint, 
+                           a.olabel::Cint, a.weight::Cdouble, (a.nextstate - 1)::Cint)::Cuchar
 end
 
 function deletearcs!(fst::MutableFst, s::Integer)::Bool
-    @ccall fstlib.FstDeleteArcs(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint)::Cuchar
+   @ccall fstlib.FstDeleteArcs(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint)::Cuchar
 end
 
 function reservearcs(fst::MutableFst, s::Integer, n::Integer)::Bool
-    @ccall fstlib.FstReserveArcs(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
-                                 n::Cint)::Cuchar
+   @ccall fstlib.FstReserveArcs(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
+                                n::Cint)::Cuchar
 end
 
 function numstates(fst::MutableFst)::Cint
-    @ccall fstlib.FstNumStates(fst.cptr::Ptr{Cvoid})::Cint
+   @ccall fstlib.FstNumStates(fst.cptr::Ptr{Cvoid})::Cint
 end
 
 function addstate!(fst::MutableFst)::Cint
-    @ccall fstlib.FstAddState(fst.cptr::Ptr{Cvoid})::Cint
+   @ccall fstlib.FstAddState(fst.cptr::Ptr{Cvoid})::Cint
 end
 
 function reservestates(fst::MutableFst, n::Integer)::Bool
@@ -140,15 +149,15 @@ end
 # VectorFst type
 
 function VectorFst{W}() where W <: Weight
-    atype = _ArcType[W]
-    cptr = @ccall fstlib.VectorFstCreate(atype::Cstring)::Ptr{Cvoid}
-    _create(VectorFst, W, cptr)
+   atype = _ArcType[W]
+   cptr = @ccall fstlib.VectorFstCreate(atype::Cstring)::Ptr{Cvoid}
+   _create(VectorFst, W, cptr)
 end
 
 function VectorFst(fst::Fst)
-    wtype = _WeightType[weighttype(fst)]
-    cptr = @ccall fstlib.VectorFstCopy(fst.cptr::Ptr{Cvoid})::Ptr{Cvoid}
-    _create(VectorFst, wtype, cptr)
+   wtype = _WeightType[weighttype(fst)]
+   cptr = @ccall fstlib.VectorFstCopy(fst.cptr::Ptr{Cvoid})::Ptr{Cvoid}
+   _create(VectorFst, wtype, cptr)
 end
 
 # function VectorFst{W}(fst::Fst{W}) where W <: Weight

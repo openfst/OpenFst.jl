@@ -4,7 +4,7 @@
 
 # The following needs to be a mutable struct so it can be finalized
 mutable struct StateIterator
-  cptr::Ptr{Cvoid}
+   cptr::Ptr{Cvoid}
 end
 
 function delete!(siter::StateIterator)
@@ -23,7 +23,7 @@ function done(siter::StateIterator)::Bool
 end
 
 function value(siter::StateIterator)::Cint
-    1 + @ccall fstlib.StateIteratorValue(siter.cptr::Ptr{Cvoid})::Cint
+   1 + @ccall fstlib.StateIteratorValue(siter.cptr::Ptr{Cvoid})::Cint
 end
 
 function next(siter::StateIterator)::Nothing
@@ -60,7 +60,7 @@ Base.eltype(fst::Fst) = Cint
 
 # The following needs to be mutable struct so it can be finalized
 mutable struct ArcIterator
-  cptr::Ptr{Cvoid}
+   cptr::Ptr{Cvoid}
 end
 
 function delete!(aiter::ArcIterator)
@@ -147,7 +147,7 @@ end
 
 # The following needs to be mutable struct so it can be finalized
 mutable struct MutableArcIterator
-  cptr::Ptr{Cvoid}
+   cptr::Ptr{Cvoid}
 end
 
 function delete!(aiter::MutableArcIterator)
@@ -163,7 +163,7 @@ function MutableArcIterator(fst::MutableFst, state::Integer)
 end
     
 function done(aiter::MutableArcIterator)::Bool
-  @ccall fstlib.MutableArcIteratorDone(aiter.cptr::Ptr{Cvoid})::Cuchar
+   @ccall fstlib.MutableArcIteratorDone(aiter.cptr::Ptr{Cvoid})::Cuchar
 end
 
 function value(aiter::MutableArcIterator)::Arc

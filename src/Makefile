@@ -1,6 +1,8 @@
 INC=/usr/local/include
 LIB=/usr/local/lib
 
+all: jopenfst.so
+
 weight.o: jopenfst.h weight.cc
 	g++ -c -o weight.o -I$(INC) -fPIC weight.cc
 
