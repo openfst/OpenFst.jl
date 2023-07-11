@@ -2,9 +2,12 @@
 # Julia OpenFst interface
 
 ## Installation
-$  ( cd src; make )  
-$  export LOAD_PATHS=./src   
-$  julia --project=./  
+Install [OpenFst](https://www.openfst.org/twiki/bin/view/FST/FstDownload)
+	$ ( cd src; make )  
+	$ export LOAD_PATHS=./src   
+	$ julia --project=./  
+NB: Update src/Makefile if you install OpenFst somewhere other than
+/usr/local.
 
 ## Usage
 This interface is similar in functionality to the 
