@@ -1,4 +1,6 @@
+# Set to where OpenFst is installed
 PREFIX=/usr/local
+
 INC=$(PREFIX)/include
 LIB=$(PREFIX)/lib
 CXXFLAGS=--std=c++17 -fPIC -I$(INC)

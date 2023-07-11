@@ -9,7 +9,7 @@
 	$ export LD_LIBRARY_PATH=./src:/usr/local/lib   
 	$ julia --project=./  
 
-NB: Change the ``FSTPREFIX`` in src/Makefile and the ``LD_LIBRARY_PATH`` if you install OpenFst somewhere other than ``/usr/local``.
+NB: Change the ``PREFIX`` in src/Makefile and the ``LD_LIBRARY_PATH`` if you install OpenFst somewhere other than ``/usr/local``.
 
 ## Usage
 This interface is similar in functionality to the 
