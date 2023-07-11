@@ -1,9 +1,10 @@
 # OpenFst.jl
-Julia OpenFst interface
+# Julia OpenFst interface
 
-To install:
-$  ( cd src; make )
-$  export LOAD_PATHS=./src
-$  julia --project=./
+## Installation
+$  ( cd src; make )  
+$  export LOAD_PATHS=./src   
+$  julia --project=./  
 
-See ./examp.jl
+## Examples
+See ./examp.jl 
