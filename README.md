@@ -6,10 +6,12 @@
 2. Execute:
 
 	$ ( cd src; make )  
-	$ export LOAD_PATHS=./src   
+	$ export LD_LIBRARY_PATH=./src:/usr/local/lib   
+    $ 
+
 	$ julia --project=./  
 
-NB: Update src/Makefile if you install OpenFst somewhere other than
+NB: Update src/Makefile and LD_LIBRARY_PATH if you install OpenFst somewhere other than
 /usr/local.
 
 ## Usage
