@@ -14,8 +14,8 @@ This interface is similar in functionality to the
 for states and arcs
 2. the julia convention of naming functions that modify their
 argument is followed. So the constructive `union(fst1, fst2)` returns a new FST
-but destructive 'union!(fst1, fst2)' modifies its first argument and returns
-`nothing`. Destructive versions of operations are provided when 
+but the destructive 'union!(fst1, fst2)' modifies its first argument and 
+returns `nothing`. Destructive versions of operations are provided when 
 more efficient and corresponding constructive versions are usually included 
 for convenience.
 3. weights are currently specified by floating point numbers supporting
