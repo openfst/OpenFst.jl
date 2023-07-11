@@ -12,9 +12,15 @@ This interface is similar in functionality to the
 [python](https://python.openfst.org) interfaces. Principal differences:
 1. the Julia convention of 1-based indexing is followed
 for states and arcs
-2. weights are currently specified by floating point numbers supporting
+2. the julia convention of naming functions that modify their
+argument is followed. So the constructive `union(fst1, fst2)` returns a new FST
+but destructive 'union!(fst1, fst2)' modifies its first argument and returns
+`nothing`. Destructive versions of operations are provided when 
+more efficient and corresponding constructive versions are usually included 
+for convenience.
+3. weights are currently specified by floating point numbers supporting
 TropicalWeight, LogWeight, and Log64Weight
-3. Most [OpenFst operations](https://www.openfst.org/twiki/bin/view/FST/FstQuickTour#AvailableOperations) are supported but currently mainly with
+4. Most [OpenFst operations](https://www.openfst.org/twiki/bin/view/FST/FstQuickTour#AvailableOperations) are supported but currently mainly with
 only the default options
 
 See the example below for FST creation, access, and operation syntax.
