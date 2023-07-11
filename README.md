@@ -25,9 +25,9 @@ returns `nothing`. Destructive versions of operations are provided when
 more efficient and corresponding constructive versions are usually included 
 for convenience.
 3. weights are currently specified by floating point numbers supporting
-TropicalWeight, LogWeight, and Log64Weight (TODO: generalize)
+TropicalWeight, LogWeight, and Log64Weight
 4. Most [OpenFst operations](https://www.openfst.org/twiki/bin/view/FST/FstQuickTour#AvailableOperations) are supported but currently mainly with
-only the default options (TODO: support options)
+only the default options
 
 See the example below for FST creation, access, and operation syntax.
 
@@ -113,3 +113,8 @@ The output of this script is:
 
 ## Testing
 See ./runtests.sh
+
+## To Do
+1. Extend to general weights and arcs
+2. Expose more options to operations in the interface
+
