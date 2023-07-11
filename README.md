@@ -7,4 +7,7 @@ $  export LOAD_PATHS=./src
 $  julia --project=./  
 
 ## Examples
-See ./examp.jl 
+See ./runexamp.sh
+
+## Testing
+See ./runtests.sh
