@@ -3,9 +3,11 @@
 
 ## Installation
 Install [OpenFst](https://www.openfst.org/twiki/bin/view/FST/FstDownload)
+
 	$ ( cd src; make )  
 	$ export LOAD_PATHS=./src   
 	$ julia --project=./  
+
 NB: Update src/Makefile if you install OpenFst somewhere other than
 /usr/local.
 
