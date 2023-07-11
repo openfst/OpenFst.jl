@@ -7,8 +7,6 @@
 
 	$ ( cd src; make )  
 	$ export LD_LIBRARY_PATH=./src:/usr/local/lib   
-    $ 
-
 	$ julia --project=./  
 
 NB: Update src/Makefile and LD_LIBRARY_PATH if you install OpenFst somewhere other than
@@ -34,7 +32,11 @@ only the default options
 See the example below for FST creation, access, and operation syntax.
 
 ## Example
-This example can be run with ./runexamp.sh
+Executing
+
+ 	$ julia --project=./exampl.jl
+
+will run this example:
 
 	#=
 	Example code for Julia OpenFst interface
