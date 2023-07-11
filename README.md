@@ -86,5 +86,18 @@ This example can be run with ./runexamp.sh
 	result2 = F.union(F.intersect(fst1, fst2), F.intersect(fst1, fst3))
 	println("Intersection distributes over union: ", equiv(result1, result2))
 
+The output of this script is:
+
+	OpenFst.VectorFst{OpenFst.TropicalWeight}
+	start = 1
+	num states = 1
+	state 1: # arcs = 4, final weight = 0.0
+	Arc(ilabel = 1, olabel = 1, weight = 1.0, nextstate = 1)
+	Arc(ilabel = 2, olabel = 2, weight = 2.0, nextstate = 1)
+	Arc(ilabel = 3, olabel = 3, weight = 3.0, nextstate = 1)
+	Arc(ilabel = 4, olabel = 4, weight = 4.0, nextstate = 1)
+	Intersection associates: true
+	Intersection distributes over union: true
+
 ## Testing
 See ./runtests.sh
