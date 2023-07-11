@@ -44,7 +44,6 @@ function randfst(ifst)
   optimize(ofst)
 end
 
-
 fst1 = randfst(flower)
 fst2 = randfst(flower)
 fst3 = randfst(flower)
@@ -62,5 +61,3 @@ result1 = F.intersect(fst1, F.union(fst2, fst3))
 # F1 * F2 U F1 * F3
 result2 = F.union(F.intersect(fst1, fst2), F.intersect(fst1, fst3))
 println("Intersection distributes over union: ", equiv(result1, result2))
-
-
