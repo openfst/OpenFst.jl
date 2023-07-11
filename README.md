@@ -2,7 +2,8 @@
 # Julia OpenFst interface
 
 ## Installation
-Install [OpenFst](https://www.openfst.org/twiki/bin/view/FST/FstDownload)
+1. Install [OpenFst](https://www.openfst.org/twiki/bin/view/FST/FstDownload)
+2. Execute:
 
 	$ ( cd src; make )  
 	$ export LOAD_PATHS=./src   
