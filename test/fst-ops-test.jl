@@ -111,6 +111,13 @@ if !F.isfst(revf) || !F.equal(revf, goldenrevf)
   error("test failed: reverse")
 end
 
+# topf = F.VectorFst(a2)
+# goldentopf = F.read(testdir * "/a2topsort.fst")
+# F.topsort(topf)
+# if !F.isfst(topf) || !F.equal(topf, goldentopf)
+#   error("test failed: topsort")
+# end
+
 distance = F.shortestdistance(f1)
 print(distance[2])
 if distance[2] != 1.0

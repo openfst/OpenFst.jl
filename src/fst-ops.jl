@@ -25,6 +25,16 @@ function concat(fst1::Fst, fst2::Fst)::Fst
    return ofst
 end
 
+function connect!(fst::MutableFst)::Nothing
+   @ccall fstlib.FstConnect(fst.cptr::Ptr{Cvoid})::Cvoid
+end
+
+function connect(fst::Fst)::Fst
+   ofst = VectorFst(fst)
+   connect!(ofst)
+   return ofst
+end
+
 function determinize(fst::Fst, δ = 1.0e-3)::Fst
    _create(VectorFst, typeof(fst).parameters[1],
            @ccall fstlib.FstDeterminize(fst.cptr::Ptr{Cvoid}, 
@@ -123,6 +133,21 @@ function shortestdistance(fst::Fst, reverse = false,
    dptr = Base.unsafe_convert(Ref{Cdouble}, distance)
    unsafe_copyto!(dptr, sptr, n[]);
    distance
+end
+
+function synchronize(fst::Fst)::Fst
+   _create(VectorFst, typeof(fst).parameters[1],
+           @ccall fstlib.FstSynchronize(fst.cptr::Ptr{Cvoid})::Ptr{Cvoid})
+end
+
+function topsort!(fst::MutableFst)::Nothing
+   @ccall fstlib.FstTopSort(fst.cptr::Ptr{Cvoid})::Cvoid
+end
+
+function topsort(fst::Fst)::Fst
+   ofst = VectorFst(fst)
+   topsort!(ofst)
+   return ofst
 end
 
 function union!(fst1::MutableFst, fst2::Fst)::Nothing

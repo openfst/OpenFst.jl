@@ -25,7 +25,7 @@ void FstDelete(FstClass *fst) {
 }
 
 FstClass *FstRead(const char *file) {
-  return FstClass::Read(file);
+  return FstClass::Read(file).release();
 }
 
 bool FstWrite(const FstClass *fst, const char *file) {

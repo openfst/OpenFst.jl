@@ -5,6 +5,7 @@ namespace fst::script {
 
 extern "C" {
   void FstClosure(MutableFstClass *fst1);
+  void FstConnect(MutableFstClass *fst1);
   FstClass *FstCompose(const FstClass *fst1, const FstClass *fst2);
   void FstConcat(MutableFstClass *fst1, const FstClass *fst2);
   bool FstEqual(const FstClass *fst1, const FstClass *fst2, float delta);
@@ -22,6 +23,8 @@ extern "C" {
   void FstRmEpsilon(MutableFstClass *fst);
   double *FstShortestDistance(const FstClass *fst, int *length, bool reverse,
 			      double delta);
+  FstClass *FstSynchronize(const FstClass *fst);
+  void FstTopSort(MutableFstClass *fst);
   void FstUnion(MutableFstClass *fst1, const FstClass *fst2);
 }
 
@@ -37,6 +40,10 @@ void FstClosure(MutableFstClass *fst) {
 
 void FstConcat(MutableFstClass *fst1, const FstClass *fst2) {
   Concat(fst1, *fst2);
+}
+
+void FstConnext(MutableFstClass *fst) {
+  Connect(fst);
 }
 
 FstClass *FstDeterminize(const FstClass *ifst, double delta) {
@@ -116,6 +123,16 @@ double *FstShortestDistance(const FstClass *fst, int *length, bool reverse,
   for (int i = 0; i < wdistance.size(); ++i)
     distance[i] = GetWeight(wdistance[i]);
   return distance;
+}
+
+FstClass *FstSynchronize(const FstClass *ifst) {
+  VectorFstClass *ofst = new VectorFstClass(ifst->ArcType());
+  Synchronize(*ifst, ofst);
+  return ofst;
+}
+
+void FstTopSort(MutableFstClass *fst) {
+  TopSort(fst);
 }
 
 void FstUnion(MutableFstClass *fst1, const FstClass *fst2) {
