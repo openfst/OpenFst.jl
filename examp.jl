@@ -29,7 +29,7 @@ for s in F.states(flower)
 end
 
 # Convenience functions
-optimize(f) = F.minimize(F.determinize(F.rmepsilon(f)))
+optimize(f) = F.arcsort(F.minimize(F.determinize(F.rmepsilon(f))), F.ilabel)
 equiv(f1, f2) = F.equivalent(optimize(f1), optimize(f2))
 
 # Create a random FST

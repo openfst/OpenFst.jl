@@ -4,8 +4,9 @@
 namespace fst::script {
 
 extern "C" {
-  void FstClosure(MutableFstClass *fst1);
-  void FstConnect(MutableFstClass *fst1);
+  void FstArcSort(MutableFstClass *fst, int sort_type);
+  void FstClosure(MutableFstClass *fst);
+  void FstConnect(MutableFstClass *fst);
   FstClass *FstCompose(const FstClass *fst1, const FstClass *fst2);
   void FstConcat(MutableFstClass *fst1, const FstClass *fst2);
   bool FstEqual(const FstClass *fst1, const FstClass *fst2, float delta);
@@ -32,6 +33,11 @@ extern "C" {
   FstClass *FstSynchronize(const FstClass *fst);
   void FstTopSort(MutableFstClass *fst);
   void FstUnion(MutableFstClass *fst1, const FstClass *fst2);
+}
+
+void FstArcSort(MutableFstClass *fst, int sort_type) {
+  ArcSortType stype = static_cast<ArcSortType>(sort_type);
+  ArcSort(fst, stype);
 }
 
 FstClass *FstCompose(const FstClass *ifst1, const FstClass *ifst2) {

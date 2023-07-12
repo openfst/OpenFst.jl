@@ -68,7 +68,7 @@ will run this example:
 	end
 
 	# Convenience functions
-	optimize(f) = F.minimize(F.determinize(F.rmepsilon(f)))
+	optimize(f) = F.arcsort(F.minimize(F.determinize(F.rmepsilon(f))), F.ilabel)
 	equiv(f1, f2) = F.equivalent(optimize(f1), optimize(f2))
 
 	# Create a random FST
@@ -118,10 +118,7 @@ The output of this script is:
 See ./runtests.sh
 
 ## To Do
-1. Wrap: encode info map relabel replace reweight
+1. Wrap: arcsort encode info map relabel replace reweight 
 2. Expose more options to operations in the interface 
 3. Improve julia safety - catch more errors in julia not C++
 4. Extend to general weights and arcs
-
-
-
