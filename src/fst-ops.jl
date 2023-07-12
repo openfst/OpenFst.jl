@@ -57,6 +57,14 @@ function equal(fst1::Fst, fst2::Fst, δ = 1.0e-3)::Bool
                           δ::Cfloat)::Cuchar
 end
 
+@enum EpsNormalizeType eps_norm_input eps_norm_output
+
+function epsnormalize(fst::Fst, norm_type::EpsNormalizeType)::Fst
+   _create(VectorFst, typeof(fst).parameters[1],
+           @ccall fstlib.FstEpsNormalize(fst.cptr::Ptr{Cvoid}, 
+                                         norm_type::Cint)::Ptr{Cvoid})
+end
+
 function equivalent(fst1::Fst, fst2::Fst, δ = 1.0e-3)::Bool
    @ccall fstlib.FstEquivalent(fst1.cptr::Ptr{Cvoid}, fst2.cptr::Ptr{Cvoid},
                                δ::Cfloat)::Cuchar
@@ -105,7 +113,6 @@ function project(fst::Fst, project_type::ProjectType)::Fst
    return ofst
 end
 
-
 function prune!(fst::MutableFst, thresh::AbstractFloat)::Nothing
    @ccall fstlib.FstPrune(fst.cptr::Ptr{Cvoid}, thresh::Cdouble)::Cvoid
 end
@@ -113,6 +120,21 @@ end
 function prune(fst::Fst, thresh::AbstractFloat)::Fst
    ofst = VectorFst(fst)
    prune!(ofst, thresh)
+   return ofst
+end
+
+@enum ReweightType reweight_to_initial reweight_to_final
+
+function push!(fst::MutableFst, reweight_type::ReweightType, δ = 1.0e-6,
+               remove_total_weight = false)::Nothing
+   @ccall fstlib.FstPush(fst.cptr::Ptr{Cvoid}, reweight_type::Cint,
+                          δ::Cfloat, remove_total_weight::Cuchar)::Cvoid
+end
+
+function push(fst::Fst, reweight_type::ReweightType, δ = 1.0e-3,
+               remove_total_weight = false)::Fst
+   ofst = VectorFst(fst)
+   push!(ofst, reweight_type, δ, remove_total_weight)
    return ofst
 end
 
@@ -141,7 +163,7 @@ function shortestdistance(fst::Fst, reverse = false,
    n = Ref{Int32}()
    sptr = @ccall fstlib.FstShortestDistance(
                    fst.cptr::Ptr{Cvoid}, n::Ref{Cint}, 
-		   reverse::Cuchar, δ::Cdouble)::Ptr{Cdouble}
+		   reverse::Cuchar, δ::Cfloat)::Ptr{Cdouble}
    distance = Vector{Float64}(undef, n[])   
    dptr = Base.unsafe_convert(Ref{Cdouble}, distance)
    unsafe_copyto!(dptr, sptr, n[]);
@@ -153,7 +175,7 @@ function shortestpath(fst::Fst, nshortest = 1, unique = false,
    _create(VectorFst, typeof(fst).parameters[1],
            @ccall fstlib.FstShortestPath(
                fst.cptr::Ptr{Cvoid}, nshortest::Cint,
-	       unique::Cuchar, δ::Cdouble)::Ptr{Cvoid})
+	       unique::Cuchar, δ::Cfloat)::Ptr{Cvoid})
 end
 
 function synchronize(fst::Fst)::Fst

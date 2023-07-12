@@ -118,6 +118,10 @@ The output of this script is:
 See ./runtests.sh
 
 ## To Do
-1. Extend to general weights and arcs
-2. Expose more options to operations in the interface
+1. Wrap: encode info map relabel replace reweight
+2. Expose more options to operations in the interface 
+3. Improve julia safety - catch more errors in julia not C++
+4. Extend to general weights and arcs
+
+
 

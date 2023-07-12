@@ -34,6 +34,12 @@ if !F.isfst(trmf) || !F.equal(a1, trmf)
    error("test failed: connect")
 end
 
+epsnf = F.epsnormalize(f1, F.eps_norm_input)
+goldenepsnf = F.read(testdir * "/f1epsnorm.fst")
+if !F.isfst(epsnf) || !F.equal(epsnf, goldenepsnf)
+  error("test failed: epsnormalize")
+end
+
 inf = F.intersect(a1, a2)
 goldeninf = F.read(testdir * "/a12intersect.fst")
 if !F.isfst(inf) || !F.equal(inf, goldeninf)
@@ -116,6 +122,13 @@ F.prune!(prf, 0.5)
 goldenpruf = F.read(testdir * "/f1prune.fst")
 if !F.isfst(prf) || !F.equal(prf, goldenpruf)
   error("test failed: prune")
+end
+
+pshf = F.VectorFst(f)
+F.push!(pshf, F.reweight_to_initial)
+goldenpshf = F.read(testdir * "/f1push.fst")
+if !F.isfst(pshf) || !F.equal(pshf, goldenpshf)
+  error("test failed: push")
 end
 
 revf = F.reverse(f1)

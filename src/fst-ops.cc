@@ -10,22 +10,25 @@ extern "C" {
   void FstConcat(MutableFstClass *fst1, const FstClass *fst2);
   bool FstEqual(const FstClass *fst1, const FstClass *fst2, float delta);
   bool FstEquivalent(const FstClass *fst1, const FstClass *fst2, float delta);
-  FstClass *FstDeterminize(const FstClass *fst, double delta);
+  FstClass *FstDeterminize(const FstClass *fst, float delta);
   FstClass *FstDifference(const FstClass *fst1, const FstClass *fst2);
-  FstClass *FstDisambiguate(const FstClass *fst, double delta);
+  FstClass *FstDisambiguate(const FstClass *fst, float delta);
+  FstClass *FstEpsNormalize(const FstClass *fst, int norm_type);
   FstClass *FstIntersect(const FstClass *fst1, const FstClass *fst2);
   void FstInvert(MutableFstClass *fst);
   bool FstIsomorphic(const FstClass *fst1, const FstClass *fst2, float delta);
   void FstMinimize(MutableFstClass *fst);
   void FstProject(MutableFstClass *fst, int project_type);
-  void FstPrune(MutableFstClass *fst, double delta);
+  void FstPrune(MutableFstClass *fst, float delta);
+  void FstPush(MutableFstClass *fst, int reweight_type, float delta, 
+	       bool remove_total_weight);
   FstClass *FstRandGen(const FstClass *fst);
   FstClass *FstReverse(const FstClass *fst);
   void FstRmEpsilon(MutableFstClass *fst);
   FstClass *FstShortestPath(const FstClass *fst, int32_t nshortest, 
-   			    bool unique, double delta);
+   			    bool unique, float delta);
   double *FstShortestDistance(const FstClass *fst, int *length, bool reverse,
-			      double delta);
+			      float delta);
   FstClass *FstSynchronize(const FstClass *fst);
   void FstTopSort(MutableFstClass *fst);
   void FstUnion(MutableFstClass *fst1, const FstClass *fst2);
@@ -49,7 +52,7 @@ void FstConnect(MutableFstClass *fst) {
   Connect(fst);
 }
 
-FstClass *FstDeterminize(const FstClass *ifst, double delta) {
+FstClass *FstDeterminize(const FstClass *ifst, float delta) {
   VectorFstClass *ofst = new VectorFstClass(ifst->ArcType());
   WeightClass zero(WeightClass::Zero(ifst->WeightType()));
   DeterminizeOptions opts(delta, zero);
@@ -63,11 +66,18 @@ FstClass *FstDifference(const FstClass *ifst1, const FstClass *ifst2) {
   return ofst;
 }
 
-FstClass *FstDisambiguate(const FstClass *ifst, double delta) {
+FstClass *FstDisambiguate(const FstClass *ifst, float delta) {
   VectorFstClass *ofst = new VectorFstClass(ifst->ArcType());
   WeightClass zero(WeightClass::Zero(ifst->WeightType()));
   DisambiguateOptions opts(delta, zero);
   Disambiguate(*ifst, ofst, opts);
+  return ofst;
+}
+
+FstClass *FstEpsNormalize(const FstClass *ifst, int norm_type) {
+  VectorFstClass *ofst = new VectorFstClass(ifst->ArcType());
+  EpsNormalizeType ntype = static_cast<EpsNormalizeType>(norm_type);
+  EpsNormalize(*ifst, ofst, ntype);
   return ofst;
 }
 
@@ -102,10 +112,16 @@ void FstProject(MutableFstClass *fst, int project_type) {
   Project(fst, ptype);
 }
 
-void FstPrune(MutableFstClass *fst, double threshold) {
+void FstPrune(MutableFstClass *fst, float threshold) {
   WeightClass weight_threshold = GetWeightClass(threshold,
 						fst->WeightType());
   Prune(fst, weight_threshold);
+}
+
+void FstPush(MutableFstClass *fst, int reweight_type, float delta, 
+	     bool remove_total_weight) {
+  ReweightType rtype = static_cast<ReweightType>(reweight_type);
+  Push(fst, rtype, delta, remove_total_weight);
 }
 
 FstClass *FstRandGen(const FstClass *ifst) {
@@ -127,7 +143,7 @@ void FstRmEpsilon(MutableFstClass *fst) {
 }
 
 double *FstShortestDistance(const FstClass *fst, int *length, bool reverse, 
-			    double delta) {
+			    float delta) {
   std::vector<WeightClass> wdistance;
   ShortestDistance(*fst, &wdistance, reverse, delta);
   double *distance = (double *) malloc(wdistance.size() * sizeof(double));
@@ -138,7 +154,7 @@ double *FstShortestDistance(const FstClass *fst, int *length, bool reverse,
 }
 
 FstClass *FstShortestPath(const FstClass *ifst, int nshortest, 
-  		          bool unique, double delta) {
+  		          bool unique, float delta) {
   VectorFstClass *ofst = new VectorFstClass(ifst->ArcType());
   WeightClass zero(WeightClass::Zero(ifst->WeightType()));
   ShortestPathOptions opts(AUTO_QUEUE, nshortest, unique, delta, zero);
