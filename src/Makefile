@@ -7,6 +7,9 @@ CXXFLAGS=--std=c++17 -fPIC -I$(INC)
 
 all: jopenfst.so
 
+clean: weight.o fst-class.o fst-ops.o fst-iterators.o jopenfst.so
+	rm -f weight.o fst-class.o fst-ops.o fst-iterators.o jopenfst.so
+
 weight.o: jopenfst.h weight.cc
 
 fst-class.o: jopenfst.h fst-class.cc
@@ -17,4 +20,4 @@ fst-iterators.o: jopenfst.h fst-iterators.cc
 
 jopenfst.so: weight.o fst-class.o fst-ops.o fst-iterators.o
 	g++ -o jopenfst.so -fPIC -shared weight.o fst-class.o fst-ops.o \
-            fst-iterators.o $(LIB)/libfst.so $(LIB)/libfstscript.so 
+               fst-iterators.o $(LIB)/libfst.so $(LIB)/libfstscript.so

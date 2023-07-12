@@ -28,6 +28,12 @@ if !F.isfst(cf) || !F.equal(cf, goldencf)
    error("test failed: compose")
 end
 
+trmf = F.VectorFst(a1)
+F.connect!(trmf)
+if !F.isfst(trmf) || !F.equal(a1, trmf)
+   error("test failed: connect")
+end
+
 inf = F.intersect(a1, a2)
 goldeninf = F.read(testdir * "/a12intersect.fst")
 if !F.isfst(inf) || !F.equal(inf, goldeninf)
@@ -72,6 +78,13 @@ if !F.isfst(invf) || !F.equal(invf, goldeninvf)
    error("test failed: invert")
 end
 
+projf = F.VectorFst(f1)
+F.project!(projf, F.output)
+goldenprojf = F.read(testdir * "/f1project.fst")
+if !F.isfst(projf) || !F.equal(projf, goldenprojf)
+   error("test failed: project")
+end
+
 rmf = F.VectorFst(f1)
 goldenrmf = F.read(testdir * "/f1rmepsilon.fst")
 F.rmepsilon!(rmf)
@@ -111,15 +124,22 @@ if !F.isfst(revf) || !F.equal(revf, goldenrevf)
   error("test failed: reverse")
 end
 
-# topf = F.VectorFst(a2)
-# goldentopf = F.read(testdir * "/a2topsort.fst")
-# F.topsort(topf)
-# if !F.isfst(topf) || !F.equal(topf, goldentopf)
-#   error("test failed: topsort")
-# end
+topf = F.VectorFst(a2)
+F.topsort(topf)
+if !F.isfst(topf) || !F.isomorphic(a2, topf)
+  error("test failed: topsort")
+end
 
 distance = F.shortestdistance(f1)
 print(distance[2])
 if distance[2] != 1.0
    error("test failed: shortestdistance")
 end
+
+shrtf = F.shortestpath(f1)
+goldenshrtf = F.read(testdir * "/f1shortest.fst")
+if !F.isfst(shrtf) || !F.equal(shrtf, goldenshrtf)
+   error("test failed: shortestpath")
+end
+
+

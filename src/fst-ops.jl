@@ -93,6 +93,19 @@ function minimize(fst::Fst)::Fst
    return ofst
 end
 
+@enum ProjectType input=1 output=2
+
+function project!(fst::MutableFst, project_type::ProjectType)::Nothing
+   @ccall fstlib.FstProject(fst.cptr::Ptr{Cvoid}, project_type::Cint)::Cvoid
+end
+
+function project(fst::Fst, project_type::ProjectType)::Fst
+   ofst = VectorFst(fst)
+   project!(ofst, project_type)
+   return ofst
+end
+
+
 function prune!(fst::MutableFst, thresh::AbstractFloat)::Nothing
    @ccall fstlib.FstPrune(fst.cptr::Ptr{Cvoid}, thresh::Cdouble)::Cvoid
 end
@@ -133,6 +146,14 @@ function shortestdistance(fst::Fst, reverse = false,
    dptr = Base.unsafe_convert(Ref{Cdouble}, distance)
    unsafe_copyto!(dptr, sptr, n[]);
    distance
+end
+
+function shortestpath(fst::Fst, nshortest = 1, unique = false,
+	              δ = 1.0e-6)::Fst
+   _create(VectorFst, typeof(fst).parameters[1],
+           @ccall fstlib.FstShortestPath(
+               fst.cptr::Ptr{Cvoid}, nshortest::Cint,
+	       unique::Cuchar, δ::Cdouble)::Ptr{Cvoid})
 end
 
 function synchronize(fst::Fst)::Fst

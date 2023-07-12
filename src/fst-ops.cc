@@ -17,10 +17,13 @@ extern "C" {
   void FstInvert(MutableFstClass *fst);
   bool FstIsomorphic(const FstClass *fst1, const FstClass *fst2, float delta);
   void FstMinimize(MutableFstClass *fst);
+  void FstProject(MutableFstClass *fst, int project_type);
   void FstPrune(MutableFstClass *fst, double delta);
   FstClass *FstRandGen(const FstClass *fst);
   FstClass *FstReverse(const FstClass *fst);
   void FstRmEpsilon(MutableFstClass *fst);
+  FstClass *FstShortestPath(const FstClass *fst, int32_t nshortest, 
+   			    bool unique, double delta);
   double *FstShortestDistance(const FstClass *fst, int *length, bool reverse,
 			      double delta);
   FstClass *FstSynchronize(const FstClass *fst);
@@ -42,7 +45,7 @@ void FstConcat(MutableFstClass *fst1, const FstClass *fst2) {
   Concat(fst1, *fst2);
 }
 
-void FstConnext(MutableFstClass *fst) {
+void FstConnect(MutableFstClass *fst) {
   Connect(fst);
 }
 
@@ -86,8 +89,17 @@ void FstInvert(MutableFstClass *fst) {
   Invert(fst);
 }
 
+bool FstIsomorphic(const FstClass *fst1, const FstClass *fst2, float delta) {
+  return Isomorphic(*fst1, *fst2, delta);
+}
+
 void FstMinimize(MutableFstClass *fst) {
   Minimize(fst);
+}
+
+void FstProject(MutableFstClass *fst, int project_type) {
+  ProjectType ptype = static_cast<ProjectType>(project_type);
+  Project(fst, ptype);
 }
 
 void FstPrune(MutableFstClass *fst, double threshold) {
@@ -123,6 +135,15 @@ double *FstShortestDistance(const FstClass *fst, int *length, bool reverse,
   for (int i = 0; i < wdistance.size(); ++i)
     distance[i] = GetWeight(wdistance[i]);
   return distance;
+}
+
+FstClass *FstShortestPath(const FstClass *ifst, int nshortest, 
+  		          bool unique, double delta) {
+  VectorFstClass *ofst = new VectorFstClass(ifst->ArcType());
+  WeightClass zero(WeightClass::Zero(ifst->WeightType()));
+  ShortestPathOptions opts(AUTO_QUEUE, nshortest, unique, delta, zero);
+  ShortestPath(*ifst, ofst, opts);
+  return ofst;
 }
 
 FstClass *FstSynchronize(const FstClass *ifst) {
