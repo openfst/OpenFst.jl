@@ -35,7 +35,7 @@ See the example below for FST creation, access, and operation syntax.
 ## Example
 Executing
 
- 	$ julia --project=./exampl.jl
+ 	$ julia --project=./ exampl.jl
 
 will run this example:
 
