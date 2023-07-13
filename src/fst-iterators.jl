@@ -88,7 +88,7 @@ function value(aiter::ArcIterator)::Arc
     @ccall fstlib.ArcIteratorValue(
         aiter.cptr::Ptr{Cvoid}, ilabel::Ref{Cint}, olabel::Ref{Cint},
         weight::Ref{Cdouble}, nextstate::Ref{Cint})::Nothing
-    Arc(ilabel[], olabel[], weight[], nextstate[] + 1)
+    Arc(ilabel[] + 1, olabel[] + 1, weight[], nextstate[] + 1)
 end
 
 function next(aiter::ArcIterator)::Nothing
@@ -176,7 +176,7 @@ function value(aiter::MutableArcIterator)::Arc
     @ccall fstlib.MutableArcIteratorValue(
         aiter.cptr::Ptr{Cvoid}, ilabel::Ref{Cint}, olabel::Ref{Cint},
         weight::Ref{Cdouble}, nextstate::Ref{Cint})::Nothing
-    Arc(ilabel[], olabel[], weight[], nextstate[] + 1)
+    Arc(ilabel[] + 1, olabel[] + 1, weight[], nextstate[] + 1)
 end
 
 function next(aiter::MutableArcIterator)::Nothing
@@ -199,8 +199,8 @@ end
 
 function setvalue(aiter::MutableArcIterator, arc::Arc)::Nothing
     @ccall fstlib.MutableArcIteratorSetValue(
-        aiter.cptr::Ptr{Cvoid}, arc.ilabel::Cint, 
-        arc.olabel::Cint, arc.weight::Cdouble, 
+        aiter.cptr::Ptr{Cvoid}, (arc.ilabel - 1)::Cint, 
+        (arc.olabel - 1)::Cint, arc.weight::Cdouble, 
         (arc.nextstate - 1)::Cint)::Cvoid
 end
 

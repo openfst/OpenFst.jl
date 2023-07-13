@@ -78,7 +78,7 @@ function write(fst::Fst, file::String)::Bool
 end
 
 """    start(fst::Fst)
-Return the initial state of _fst_
+Return the initial state of _fst_ (or 0 if no initial state).
 """
 function start(fst::Fst)::Cint
     1 + @ccall fstlib.FstStart(fst.cptr::Ptr{Cvoid})::Cint
@@ -187,8 +187,8 @@ function addstate!(fst::MutableFst)::Cint
    @ccall fstlib.FstAddState(fst.cptr::Ptr{Cvoid})::Cint
 end
 
-function reservestates(fst::MutableFst, n::Integer)::Bool
-    @ccall fstlib.FstReserveStates(fst.cptr::Ptr{Cvoid}, n::Cint)::Cuchar
+function reservestates(fst::MutableFst, n::Integer)::Nothing
+    @ccall fstlib.FstReserveStates(fst.cptr::Ptr{Cvoid}, n::Cint)::Cvoid
 end
 
 

@@ -35,7 +35,7 @@ if teststates != goldenstates
 end 
 
 # ArcIterator
-goldenarcs = [F.Arc(1, 2, 1.0, 2), F.Arc(0, 0, 2.0, 2), F.Arc(5, 6, 3.0, 1)]
+goldenarcs = [F.Arc(2, 3, 1.0, 2), F.Arc(1, 1, 2.0, 2), F.Arc(6, 7, 3.0, 1)]
 
 # - OpenFst-style iteration/indexing interface (0-based arc indexing)
 aiter = F.ArcIterator(f, 1)

@@ -15,8 +15,10 @@ NB: Change the ``PREFIX`` in src/Makefile and the ``LD_LIBRARY_PATH`` if you ins
 This interface is similar in functionality to the 
 [OpenFst command-line](https://www.openfst.org) and 
 [python](https://python.openfst.org) interfaces. Principal differences:
-1. the Julia convention of 1-based indexing is followed
-for states and arcs
+1. the Julia convention of 1-based indexing is followed for states,
+arcs and labels. E.g. the first state and arc of a state has index 1
+and label 1 is epsilon. Label ID 0 and state ID 0 are reserved for
+'nolabel' and 'nostateid' respectively.
 2. the Julia convention of naming functions that modify their
 argument is followed. So the constructive `union(fst1, fst2)` returns a new FST
 but the destructive 'union!(fst1, fst2)' modifies its first argument and 
