@@ -50,8 +50,10 @@ end
 
 # Fst type
 
-"""    read(file::String)
-Read in an OpenFst binary format FST from _file_
+"""    
+    read(file::String)
+Read in an OpenFst binary format FST from _file_. The label and
+and states iDs are incremented by one to Julia conventions.
 """
 function read(file::String)
     cptr = @ccall fstlib.FstRead(file::Cstring)::Ptr{Cvoid}
@@ -70,7 +72,8 @@ end
 
 """
     write(fst::Fst, file::String)
-Write _fst_ to _file_ in OpenFst binary format
+Write _fst_ to _file_ in OpenFst binary format.The label and
+and states iDs are decremented by one to OpenFst conventions.
 """
 function write(fst::Fst, file::String)::Bool
     ret = @ccall fstlib.FstWrite(fst.cptr::Ptr{Cvoid}, file::Cstring)::Cuchar
