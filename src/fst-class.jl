@@ -154,8 +154,10 @@ end
 Add arc _a_ from  state _s_ to _fst_
 """
 function addarc!(fst::MutableFst, s::Integer, a::Arc)::Bool
-   @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, a.ilabel::Cint, 
-                           a.olabel::Cint, a.weight::Cdouble, (a.nextstate - 1)::Cint)::Cuchar
+   @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
+                           (a.ilabel - 1)::Cint, 
+                           (a.olabel - 1)::Cint, a.weight::Cdouble, 
+                           (a.nextstate - 1)::Cint)::Cuchar
 end
 
 """
