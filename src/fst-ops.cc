@@ -7,7 +7,8 @@ extern "C" {
   void FstArcSort(MutableFstClass *fst, int sort_type);
   void FstClosure(MutableFstClass *fst);
   void FstConnect(MutableFstClass *fst);
-  FstClass *FstCompose(const FstClass *fst1, const FstClass *fst2);
+  FstClass *FstCompose(const FstClass *fst1, const FstClass *fst2,
+		       bool connect, int filter_type);
   void FstConcat(MutableFstClass *fst1, const FstClass *fst2);
   bool FstEqual(const FstClass *fst1, const FstClass *fst2, float delta);
   bool FstEquivalent(const FstClass *fst1, const FstClass *fst2, float delta);
@@ -15,7 +16,8 @@ extern "C" {
   FstClass *FstDifference(const FstClass *fst1, const FstClass *fst2);
   FstClass *FstDisambiguate(const FstClass *fst, float delta);
   FstClass *FstEpsNormalize(const FstClass *fst, int norm_type);
-  FstClass *FstIntersect(const FstClass *fst1, const FstClass *fst2);
+  FstClass *FstIntersect(const FstClass *fst1, const FstClass *fst2,
+			 bool connect, int filter_type);
   void FstInvert(MutableFstClass *fst);
   bool FstIsomorphic(const FstClass *fst1, const FstClass *fst2, float delta);
   void FstMinimize(MutableFstClass *fst);
@@ -40,9 +42,11 @@ void FstArcSort(MutableFstClass *fst, int sort_type) {
   ArcSort(fst, stype);
 }
 
-FstClass *FstCompose(const FstClass *ifst1, const FstClass *ifst2) {
+FstClass *FstCompose(const FstClass *ifst1, const FstClass *ifst2, 
+		     bool connect, int filter_type) {
   VectorFstClass *ofst = new VectorFstClass(ifst1->ArcType());
-  Compose(*ifst1, *ifst2, ofst);
+  ComposeOptions opts(connect, static_cast<ComposeFilter>(filter_type));
+  Compose(*ifst1, *ifst2, ofst, opts);
   return ofst;
 }
 
@@ -95,9 +99,11 @@ bool FstEquivalent(const FstClass *fst1, const FstClass *fst2, float delta) {
   return Equivalent(*fst1, *fst2, delta);
 }
 
-FstClass *FstIntersect(const FstClass *ifst1, const FstClass *ifst2) {
+FstClass *FstIntersect(const FstClass *ifst1, const FstClass *ifst2,
+		       bool connect, int filter_type) {
   VectorFstClass *ofst = new VectorFstClass(ifst1->ArcType());
-  Intersect(*ifst1, *ifst2, ofst);
+  ComposeOptions opts(connect, static_cast<ComposeFilter>(filter_type));
+  Intersect(*ifst1, *ifst2, ofst, opts);
   return ofst;
 }
 
