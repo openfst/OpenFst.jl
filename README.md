@@ -7,14 +7,16 @@ In the Julia REPL, hit `]` to enter the package mode and type
 ```julia
 pkg> add https://github.com/openfst/OpenFst.jl
 ```
-
-Then, on the first call of
+and then to check that everything is ok
 ```julia
+pkg> test OpenFst
+```
+
+|> On the first call of
+ ```julia
 julia> using OpenFst
 ```
-[OpenFst](https://www.openfst.org) will be downloaded or installed.
-
-NB: Change the ``PREFIX`` in src/Makefile and the ``LD_LIBRARY_PATH`` if you install OpenFst somewhere other than ``/usr/local``.
+[OpenFst](https://www.openfst.org) will be downloaded and installed.
 
 ## Usage
 This interface is similar in functionality to the
