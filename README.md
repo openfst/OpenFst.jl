@@ -11,9 +11,8 @@ and then to check that everything is ok
 ```julia
 pkg> test OpenFst
 ```
-
-|> On the first call of
- ```julia
+On the first call of 
+```julia
 julia> using OpenFst
 ```
 [OpenFst](https://www.openfst.org) will be downloaded and installed.
