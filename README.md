@@ -2,18 +2,23 @@
 # Julia OpenFst interface
 
 ## Installation
-1. Install [OpenFst](https://www.openfst.org/twiki/bin/view/FST/FstDownload). (Code here was developed with OpenFst 1.8.2).
-2. Execute:
 
-	$ ( cd src; make )  
-	$ export LD_LIBRARY_PATH=./src:/usr/local/lib   
-	$ julia --project=./  
+In the Julia REPL, hit `]` to enter the package mode and type
+```julia
+pkg> add https://github.com/openfst/OpenFst.jl
+```
+
+Then, on the first call of
+```julia
+julia> using OpenFst
+```
+[OpenFst](https://www.openfst.org) will be downloaded or installed.
 
 NB: Change the ``PREFIX`` in src/Makefile and the ``LD_LIBRARY_PATH`` if you install OpenFst somewhere other than ``/usr/local``.
 
 ## Usage
-This interface is similar in functionality to the 
-[OpenFst command-line](https://www.openfst.org) and 
+This interface is similar in functionality to the
+[OpenFst command-line](https://www.openfst.org) and
 [python](https://python.openfst.org) interfaces. Principal differences:
 1. the Julia convention of 1-based indexing is followed for states,
 arcs and labels. E.g. the first state and arc of a state has index 1
@@ -21,9 +26,9 @@ and label 1 is epsilon. Label ID 0 and state ID 0 are reserved for
 'nolabel' and 'nostateid' respectively.
 2. the Julia convention of naming functions that modify their
 argument is followed. So the constructive `union(fst1, fst2)` returns a new FST
-but the destructive 'union!(fst1, fst2)' modifies its first argument and 
-returns `nothing`. Destructive versions of operations are provided when 
-more efficient and corresponding constructive versions are usually included 
+but the destructive 'union!(fst1, fst2)' modifies its first argument and
+returns `nothing`. Destructive versions of operations are provided when
+more efficient and corresponding constructive versions are usually included
 for convenience.
 3. weights are currently specified by floating point numbers supporting
 TropicalWeight, LogWeight, and Log64Weight
@@ -61,7 +66,7 @@ will run this example:
 	println("start = ", F.start(flower))
 	println("num states = ", F.numstates(flower))
 	for s in F.states(flower)
-		println("state ", s, 
+		println("state ", s,
 				": # arcs = ", F.numarcs(flower, s),
 				", final weight = ", F.final(flower, s))
 		for a in F.arcs(flower, s)
@@ -74,7 +79,7 @@ will run this example:
 	equiv(f1, f2) = F.equivalent(optimize(f1), optimize(f2))
 
 	# Create a random FST
-	function randfst(ifst) 
+	function randfst(ifst)
 	  # union some paths in the flower automaton
 	  ofst = F.VectorFst{F.TropicalWeight}()
 	  for i in 1:5
@@ -120,7 +125,7 @@ The output of this script is:
 See ./runtests.sh
 
 ## To Do
-1. Wrap: encode info map relabel replace reweight 
-2. Expose more options to operations in the interface 
+1. Wrap: encode info map relabel replace reweight
+2. Expose more options to operations in the interface
 3. Improve julia safety - catch more errors in julia not C++
 4. Extend to general weights and arcs
