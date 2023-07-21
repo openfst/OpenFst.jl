@@ -26,7 +26,6 @@ function __init__()
         path = joinpath(artifact"openfst", "openfst-1.8.2")
         builddir = mkpath(joinpath(path, "build"))
         cd(path)
-        @show "BUILD_DIR=$builddir"
         lib = joinpath(builddir, "lib", "libfst" * so_ext)
         if ! isfile(lib)
             @debug "Building openfst"
