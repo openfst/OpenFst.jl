@@ -23,13 +23,14 @@ function __init__()
     OPENFST_PATH = if "JULIA_OPENFST_PATH" in keys(ENV)
         ENV["JULIA_OPENFST_PATH"]
     else
-        path = joinpath(artifact"openfst", "openfst-1.8.2.post1")
+        path = joinpath(artifact"openfst", "openfst-1.8.2")
         builddir = mkpath(joinpath(path, "build"))
         cd(path)
+        @show "BUILD_DIR=$builddir"
         lib = joinpath(builddir, "lib", "libfst" * so_ext)
         if ! isfile(lib)
             @debug "Building openfst"
-            run(`./configure --prefix $(buildpath)`)
+            run(`./configure --prefix=$(builddir)`)
             run(`make -j $(Base.Threads.nthreads())`)
             run(`make install`)
         else
@@ -39,7 +40,6 @@ function __init__()
     end
 
     @debug "Using openfst located in $OPENFST_PATH"
-
     pkgdir = dirname(pathof(OpenFst))
     lib = joinpath(pkgdir, "jopenfst.so")
     if "JULIA_OPENFST_PATH" in keys(ENV) || ! isfile(lib)
