@@ -380,6 +380,32 @@ function shortestdistance(fst::Fst, reverse::Bool = false,
     distance
 end
 
+@enum QueueType trivial_queue fifo_queue lifo_queue shortest_first_queue top_order_queue state_order_queue scc_queue auto_queue
+
+"""
+    shortestdistance(fst::Fst, reverse = false, δ = 1.0e-6)
+Finds the single-source shortest distance from the initial states, returning
+a Vector of distances. The ith entry in the distance vector
+corresponds to the ith state distance. If the length n of the vector is
+less than the number of states in the FST, then the distance for any
+state s >= n is semiring *0*.
+# Arguments
+    fst: input FST
+    queue_type: fifo_queue|lifo_queue|shortest_first_queue|top_order_queue|state_order_queue|auto_queue
+    δ: weight delta for convergence
+"""
+function shortestdistance(fst::Fst, queue_type::QueueType,
+                        δ::AbstractFloat = 1.0e-6)::Vector{Cdouble}
+    n = Ref{Int32}()
+    sptr = @ccall fstlib.FstShortestDistanceWithQueue(
+        fst.cptr::Ptr{Cvoid}, n::Ref{Cint}, 
+	    queue_type::Cint, δ::Cfloat)::Ptr{Cdouble}
+    distance = Vector{Float64}(undef, n[])   
+    dptr = Base.unsafe_convert(Ref{Cdouble}, distance)
+    unsafe_copyto!(dptr, sptr, n[]);
+    distance 
+end
+
 """
     shortestpath(fst::Fst, nshortest = 1, unique = false, δ = 1.0e-6)
 Finds the (n) shortest paths(s) in an FST.

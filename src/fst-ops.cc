@@ -32,6 +32,8 @@ extern "C" {
    			    bool unique, float delta);
   double *FstShortestDistance(const FstClass *fst, int *length, bool reverse,
 			      float delta);
+  double *FstShortestDistanceWithQueue(const FstClass *fst, int *length,
+            int queue_type, float delta);
   FstClass *FstSynchronize(const FstClass *fst);
   void FstTopSort(MutableFstClass *fst);
   void FstUnion(MutableFstClass *fst1, const FstClass *fst2);
@@ -158,6 +160,19 @@ double *FstShortestDistance(const FstClass *fst, int *length, bool reverse,
 			    float delta) {
   std::vector<WeightClass> wdistance;
   ShortestDistance(*fst, &wdistance, reverse, delta);
+  double *distance = (double *) malloc(wdistance.size() * sizeof(double));
+  *length = wdistance.size();
+  for (int i = 0; i < wdistance.size(); ++i)
+    distance[i] = GetWeight(wdistance[i]);
+  return distance;
+}
+
+double *FstShortestDistanceWithQueue(const FstClass *fst, int *length,
+          int queue_type, float delta) {
+  std::vector<WeightClass> wdistance;
+  ShortestDistanceOptions opts(
+    static_cast<QueueType>(queue_type), ArcFilterType::ANY, kNoStateId, delta);
+  ShortestDistance(*fst, &wdistance, opts);
   double *distance = (double *) malloc(wdistance.size() * sizeof(double));
   *length = wdistance.size();
   for (int i = 0; i < wdistance.size(); ++i)
