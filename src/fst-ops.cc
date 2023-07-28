@@ -37,6 +37,7 @@ extern "C" {
   FstClass *FstSynchronize(const FstClass *fst);
   void FstTopSort(MutableFstClass *fst);
   void FstUnion(MutableFstClass *fst1, const FstClass *fst2);
+  bool FstVerify(const FstClass *fst);
 }
 
 void FstArcSort(MutableFstClass *fst, int sort_type) {
@@ -201,6 +202,10 @@ void FstTopSort(MutableFstClass *fst) {
 
 void FstUnion(MutableFstClass *fst1, const FstClass *fst2) {
   Union(fst1, *fst2);
+}
+
+bool FstVerify(const FstClass *fst) {
+  return Verify(*fst);
 }
 
 }  // namespace fst::script

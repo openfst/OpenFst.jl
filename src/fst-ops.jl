@@ -466,3 +466,11 @@ function union(fst1::Fst, fst2::Fst)::Fst
     union!(ofst, fst2)
     return ofst
 end
+
+"""
+    verify(fst::Fst)
+Checks the sanity of an FST, returning false if it is incomplete or ill-formed.
+"""
+function verify(fst::Fst)::Bool
+    @ccall fstlib.FstVerify(fst.cptr::Ptr{Cvoid})::Cuchar
+end
