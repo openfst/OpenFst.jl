@@ -469,7 +469,7 @@ end
 
 """
     verify(fst::Fst)
-Checks the sanity of an FST, returning false if it is incomplete or ill-formed.
+Checks the validity of an FST, returning false if it is incomplete or ill-formed.
 """
 function verify(fst::Fst)::Bool
     @ccall fstlib.FstVerify(fst.cptr::Ptr{Cvoid})::Cuchar
