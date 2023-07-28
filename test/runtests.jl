@@ -1,5 +1,7 @@
-using OpenFst
+
 using Test
+using OpenFst
+
 
 @testset "FST Class" begin
    include("fst-class-test.jl")

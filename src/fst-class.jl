@@ -30,7 +30,7 @@ end
 end
 
 function show(arc::Arc)
-    println("Arc(ilabel = ", arc.ilabel, ", olabel = ", arc.olabel, 
+    println("Arc(ilabel = ", arc.ilabel, ", olabel = ", arc.olabel,
             ", weight = ", arc.weight, ", nextstate = ", arc.nextstate, ")")
 end
 
@@ -50,14 +50,14 @@ end
 
 # Fst type
 
-"""    
+"""
     read(file::String)
 Read in an OpenFst binary format FST from _file_. The label and
 and states iDs are incremented by one to Julia conventions.
 """
 function read(file::String)
     cptr = @ccall fstlib.FstRead(file::Cstring)::Ptr{Cvoid}
-    fst = GenericFst{Weight}(cptr)   
+    fst = GenericFst{Weight}(cptr)
     if isfst(fst)
         ftype = fsttype(fst) == "vector" ? VectorFst : GenericFst
         wtype = _WeightType[arctype(fst)]
@@ -120,7 +120,7 @@ end
 
 function weighttype(fst::Fst)::String
     str = @ccall fstlib.FstWeightType(fst.cptr::Ptr{Cvoid})::Cstring
-    unsafe_string(str);  
+    unsafe_string(str);
 end
 
 function arctype(fst::Fst)::String
@@ -130,7 +130,7 @@ end
 
 function fsttype(fst::Fst)::String
     str = @ccall fstlib.FstType(fst.cptr::Ptr{Cvoid})::Cstring
-    unsafe_string(str);  
+    unsafe_string(str);
 end
 
 # MutableFst type
@@ -148,7 +148,7 @@ end
 Set the final weight of state _s_ in _fst_ to _w_
 """
 function setfinal!(fst::MutableFst, s::Integer, w::AbstractFloat)::Bool
-   @ccall fstlib.FstSetFinal(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
+   @ccall fstlib.FstSetFinal(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint,
                             w::Cdouble)::Cuchar
 end
 
@@ -157,9 +157,9 @@ end
 Add arc _a_ from  state _s_ to _fst_
 """
 function addarc!(fst::MutableFst, s::Integer, a::Arc)::Bool
-   @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
-                           (a.ilabel - 1)::Cint, 
-                           (a.olabel - 1)::Cint, a.weight::Cdouble, 
+   @ccall fstlib.FstAddArc(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint,
+                           (a.ilabel - 1)::Cint,
+                           (a.olabel - 1)::Cint, a.weight::Cdouble,
                            (a.nextstate - 1)::Cint)::Cuchar
 end
 
@@ -172,7 +172,7 @@ function deletearcs!(fst::MutableFst, s::Integer)::Bool
 end
 
 function reservearcs(fst::MutableFst, s::Integer, n::Integer)::Bool
-   @ccall fstlib.FstReserveArcs(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint, 
+   @ccall fstlib.FstReserveArcs(fst.cptr::Ptr{Cvoid}, (s - 1)::Cint,
                                 n::Cint)::Cuchar
 end
 

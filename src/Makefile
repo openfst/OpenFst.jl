@@ -1,5 +1,5 @@
 # Set to where OpenFst is installed
-PREFIX=/usr/local
+PREFIX:=/usr/local
 
 INC=$(PREFIX)/include
 LIB=$(PREFIX)/lib
@@ -20,4 +20,4 @@ fst-iterators.o: jopenfst.h fst-iterators.cc
 
 jopenfst.so: weight.o fst-class.o fst-ops.o fst-iterators.o
 	g++ -o jopenfst.so -fPIC -shared weight.o fst-class.o fst-ops.o \
-               fst-iterators.o $(LIB)/libfst.so $(LIB)/libfstscript.so
+               fst-iterators.o -Wl,-rpath=$(LIB) $(LIB)/libfst.so $(LIB)/libfstscript.so

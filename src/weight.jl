@@ -10,5 +10,3 @@ _WeightType = Dict([("standard", TropicalWeight), ("tropical", TropicalWeight),
 _ArcType = Dict([(TropicalWeight, "standard"), (LogWeight, "log"),
                 (Log64Weight, "log64")])
 
-
-

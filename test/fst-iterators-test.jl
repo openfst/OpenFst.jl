@@ -5,9 +5,7 @@ const tmpdir = "/tmp"
 f = F.read(testdir * "/f1const.fst")
 mf = F.read(testdir * "/f1vector.fst")
 
-if !F.isfst(f)
-  error("test failed: read")
-end
+@test F.isfst(f)
 
 # StateIterator
 goldenstates = [1,2]
@@ -20,9 +18,7 @@ while !F.done(siter)
    F.next(siter)
 end
 
-if teststates != goldenstates
-   error("test failed: state iterator (1)")
-end 
+@test teststates == goldenstates
 
 # - Julia-style iteration interface
 teststates = Vector{Int32}()
@@ -30,9 +26,7 @@ for s in F.states(f)
    push!(teststates, s)
 end
 
-if teststates != goldenstates
-   error("test failed: state iterator (2)")
-end 
+teststates == goldenstates
 
 # ArcIterator
 goldenarcs = [F.Arc(2, 3, 1.0, 2), F.Arc(1, 1, 2.0, 2), F.Arc(6, 7, 3.0, 1)]
@@ -48,7 +42,7 @@ end
 
 if testarcs != goldenarcs
    error("test failed: arc iterator (1)")
-end 
+end
 
 F.reset(aiter)
 F.seek(aiter, 2)
@@ -64,7 +58,7 @@ end
 
 if testarcs != goldenarcs
    error("test failed: arc iterator (3)")
-end 
+end
 
 farcs = F.arcs(f, 1)
 if farcs[1] != goldenarcs[1]
@@ -83,19 +77,14 @@ end
 
 if testarcs != goldenarcs
    error("test failed: mutable arc iterator (1)")
-end 
+end
 
 F.reset(aiter)
 F.seek(aiter, 2)
-if F.position(aiter) != 2 || F.value(aiter) != goldenarcs[2]
-   error("test failed: mutable arc iterator (2)")
-end
+@test F.position(aiter) == 2 && F.value(aiter) == goldenarcs[2]
 
 F.setvalue(aiter, goldenarcs[1])
-
-if F.value(aiter) != goldenarcs[1]
-   error("test failed: mutable arc iterator (3)")
-end
+@test F.value(aiter) == goldenarcs[1]
 
 # restore
 F.setvalue(aiter, goldenarcs[2])
@@ -107,16 +96,9 @@ for a in F.arcs(mf, 1)
 end
 
 mfarcs = F.arcs(mf, 1)
-if mfarcs[1] != goldenarcs[1]
-   error("test failed: mutable arc index (1)")
-end
+@test mfarcs[1] == goldenarcs[1]
 
 mfarcs[1] = goldenarcs[2]
-
-if mfarcs[1] != goldenarcs[2]
-   error("test failed: mutable arc index (2)")
-end
-
-# restore
-mfarcs[1] != goldenarcs[1]
+@test mfarcs[1] == goldenarcs[2]
+@test mfarcs[1] != goldenarcs[1]
 

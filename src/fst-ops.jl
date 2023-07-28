@@ -28,17 +28,17 @@ end
 
 """
     compose(fst1::Fst, fst2::Fst, connect = true, filter = auto)
-Compose two FSTs, returning the result. Either _fst1_ needs to be 
+Compose two FSTs, returning the result. Either _fst1_ needs to be
 olabel sorted or _fst2_ needs to be ilabel sorted.
 # Arguments:
     fst1,2: input FSTs
     connect: connect the result
     filter: auto|null|trivial|sequence|alt_sequence|match|no_match
 """
-function compose(fst1::Fst, fst2::Fst, connect::Bool = true, 
+function compose(fst1::Fst, fst2::Fst, connect::Bool = true,
                  filter::ComposeFilter = auto)::Fst
     _create(VectorFst, typeof(fst1).parameters[1],
-            @ccall fstlib.FstCompose(fst1.cptr::Ptr{Cvoid}, 
+            @ccall fstlib.FstCompose(fst1.cptr::Ptr{Cvoid},
   	                             fst2.cptr::Ptr{Cvoid},
                                      connect::Cuchar,
                                      filter::Cint)::Ptr{Cvoid})
@@ -67,7 +67,7 @@ end
 Concatenate two Fsts, modifying the 1st argument.
 """
 function concat!(fst1::MutableFst, fst2::Fst)::Nothing
-    @ccall fstlib.FstConcat(fst1.cptr::Ptr{Cvoid}, 
+    @ccall fstlib.FstConcat(fst1.cptr::Ptr{Cvoid},
   	                    fst2.cptr::Ptr{Cvoid})::Cvoid
 end
 
@@ -83,7 +83,7 @@ end
 
 """
     connect!(fst::MutableFst)
-Remove inaccessible and non-coaccessible states from an FST, modifying 
+Remove inaccessible and non-coaccessible states from an FST, modifying
 its argument.
 """
 function connect!(fst::MutableFst)::Nothing
@@ -110,20 +110,20 @@ Determinizes an FST, returning the result.
 """
 function determinize(fst::Fst, δ::AbstractFloat = 1.0e-3)::Fst
     _create(VectorFst, typeof(fst).parameters[1],
-            @ccall fstlib.FstDeterminize(fst.cptr::Ptr{Cvoid}, 
+            @ccall fstlib.FstDeterminize(fst.cptr::Ptr{Cvoid},
                                          δ::Cfloat)::Ptr{Cvoid})
 end
 
 
 """
     difference(fsa1::Fst, fsa2::Fst)
-Removes strings in _fsta2_ from _fsta1_. Either _fsta1_ needs to be 
-olabel sorted or _fsta2_ needs to be ilabel sorted and 
+Removes strings in _fsta2_ from _fsta1_. Either _fsta1_ needs to be
+olabel sorted or _fsta2_ needs to be ilabel sorted and
 _fsta2_ needs to be epsilon-free, unweighted, and deterministic.
 """
 function difference(fst1::Fst, fst2::Fst)::Fst
     _create(VectorFst, typeof(fst1).parameters[1],
-            @ccall fstlib.FstDifference(fst1.cptr::Ptr{Cvoid}, 
+            @ccall fstlib.FstDifference(fst1.cptr::Ptr{Cvoid},
      	                                fst2.cptr::Ptr{Cvoid})::Ptr{Cvoid})
 end
 
@@ -137,7 +137,7 @@ the result.
 """
 function disambiguate(fst::Fst, δ::AbstractFloat = 1.0e-3)::Fst
     _create(VectorFst, typeof(fst).parameters[1],
-            @ccall fstlib.FstDisambiguate(fst.cptr::Ptr{Cvoid}, 
+            @ccall fstlib.FstDisambiguate(fst.cptr::Ptr{Cvoid},
                                           δ::Cfloat)::Ptr{Cvoid})
 end
 
@@ -161,7 +161,7 @@ Epsilon normalizes an FST, returning the result.
 """
 function epsnormalize(fst::Fst, norm_type::EpsNormalizeType)::Fst
     _create(VectorFst, typeof(fst).parameters[1],
-            @ccall fstlib.FstEpsNormalize(fst.cptr::Ptr{Cvoid}, 
+            @ccall fstlib.FstEpsNormalize(fst.cptr::Ptr{Cvoid},
                                           norm_type::Cint)::Ptr{Cvoid})
 end
 
@@ -188,10 +188,10 @@ needs to be label sorted.
     connect: connect the result
     filter: auto|null|trivial|sequence|alt_sequence|match|no_match
 """
-function intersect(fst1::Fst, fst2::Fst, connect::Bool = true, 
+function intersect(fst1::Fst, fst2::Fst, connect::Bool = true,
                    filter::ComposeFilter = auto)::Fst
     _create(VectorFst, typeof(fst1).parameters[1],
-            @ccall fstlib.FstIntersect(fst1.cptr::Ptr{Cvoid}, 
+            @ccall fstlib.FstIntersect(fst1.cptr::Ptr{Cvoid},
                                        fst2.cptr::Ptr{Cvoid},
                                        connect::Cuchar,
                                        filter::Cint)::Ptr{Cvoid})
@@ -291,7 +291,7 @@ end
           remove_total_weight = false)
 Pushes the weights of an FST, modifying its 1st argument.
 # Arguments:
-    fst: FST to push    
+    fst: FST to push
     reweight_type: reweight_to_initial|reweight_to_final
     remove_to_weight: true|false
     δ: weight delta for convergence
@@ -368,13 +368,13 @@ state s >= n is semiring *0*.
     reverse: false: distance from initial state, true: from (super-)final state
     δ: weight delta for convergence
 """
-function shortestdistance(fst::Fst, reverse::Bool = false, 
+function shortestdistance(fst::Fst, reverse::Bool = false,
 	                  δ::AbstractFloat = 1.0e-6)::Vector{Cdouble}
     n = Ref{Int32}()
     sptr = @ccall fstlib.FstShortestDistance(
-        fst.cptr::Ptr{Cvoid}, n::Ref{Cint}, 
+        fst.cptr::Ptr{Cvoid}, n::Ref{Cint},
 	reverse::Cuchar, δ::Cfloat)::Ptr{Cdouble}
-    distance = Vector{Float64}(undef, n[])   
+    distance = Vector{Float64}(undef, n[])
     dptr = Base.unsafe_convert(Ref{Cdouble}, distance)
     unsafe_copyto!(dptr, sptr, n[]);
     distance
@@ -453,7 +453,7 @@ end
 Unions two Fsts, modifying its 1st argument.
 """
 function union!(fst1::MutableFst, fst2::Fst)::Nothing
-    @ccall fstlib.FstUnion(fst1.cptr::Ptr{Cvoid}, 
+    @ccall fstlib.FstUnion(fst1.cptr::Ptr{Cvoid},
                            fst2.cptr::Ptr{Cvoid})::Cvoid
 end
 
